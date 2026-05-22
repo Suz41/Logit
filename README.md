@@ -1,6 +1,6 @@
 # Log!t
 
-**Version:** v1.0.1
+**Version:** v1.0.2
 **Created by:** [Suz41](https://github.com/Suz41)
 
 A personal movie logging app built as a single-file web app. Search movies via TMDB, rate them, and track your watching habits — all stored locally in your browser.
@@ -29,6 +29,16 @@ A companion stats dashboard that visualizes your movie data:
 - Decade breakdown
 - Recent movies list
 
+## About Page (about.html)
+
+A track page showing what the app uses:
+
+- App info and version
+- Tech stack breakdown (HTML, CSS, JS, TMDB, localStorage)
+- Live storage usage with per-key breakdown
+- Movie data field reference
+- Creator info and links
+
 ## How to Use
 
 1. Open the app in your browser
@@ -44,6 +54,9 @@ A companion stats dashboard that visualizes your movie data:
 - localStorage for persistence
 
 ## Changelog
+
+### v1.0.2 (2026-05-22)
+- Added About page (about.html) with tech stack, storage usage, and app info
 
 ### v1.0.1 (2026-05-22)
 - Added Clear All button in Stats page header for development use
