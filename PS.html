@@ -336,7 +336,13 @@ onclick="history.back()">
 Stats
 </div>
 
-<div style="width:30px"></div>
+<button
+class="headBtn"
+onclick="clearAllMovies()"
+title="Clear All Movies"
+style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;background:#e94560;">
+Clear
+</button>
 
 </header>
 
@@ -1039,6 +1045,14 @@ ${count}
 `;
 
 });
+
+/* ========= CLEAR ALL ========= */
+
+function clearAllMovies(){
+if(!confirm('Delete all movies? This cannot be undone.'))return;
+localStorage.removeItem('movies');
+location.reload();
+}
 
 </script>
 
