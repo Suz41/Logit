@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Log!t - Stats</title>
+
+<link
+rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#0d0d0d;
+--surface:#111;
+--surface-light:#1a1a1a;
+--text-main:#fff;
+--text-muted:#888;
+--text-sub:#555;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+height:100%;
+background:var(--bg);
+color:var(--text-main);
+font-family:'Inter',sans-serif;
+overflow-x:hidden;
+}
+
+body::-webkit-scrollbar{
+display:none;
+}
+
+/* ========= HEADER ========= */
+
+.header{
+height:46px;
+padding:0 12px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:1px solid #1b1b1b;
+position:sticky;
+top:0;
+background:var(--bg);
+z-index:20;
+}
+
+.logo{
+font-family:'Poppins',sans-serif;
+font-size:16px;
+font-weight:700;
+letter-spacing:-0.5px;
+}
+
+.headBtn{
+width:30px;
+height:30px;
+border:none;
+border-radius:50%;
+background:var(--surface-light);
+color:var(--text-main);
+font-size:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+line-height:1;
+}
+
+/* ========= LAYOUT ========= */
+
+.mapWrap{
+padding:10px;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+/* ========= HERO ========= */
+
+.hero{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+}
+
+.statBox{
+height:78px;
+background:var(--surface);
+border-radius:14px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+padding:6px;
+text-align:center;
+}
+
+.statBox h2{
+font-size:20px;
+font-weight:700;
+font-family:'Poppins',sans-serif;
+line-height:1;
+margin-bottom:4px;
+}
+
+.statBox p{
+font-size:9px;
+color:var(--text-muted);
+text-transform:uppercase;
+font-weight:700;
+letter-spacing:.5px;
+}
+
+.timeSub{
+font-size:7px;
+font-weight:600;
+color:var(--text-muted);
+margin-top:4px;
+line-height:1.2;
+}
+
+/* ========= PEOPLE ========= */
+
+.peopleGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.peopleCard{
+background:var(--surface);
+border-radius:14px;
+padding:12px;
+overflow:hidden;
+}
+
+.peopleTitle{
+font-size:11px;
+font-weight:700;
+letter-spacing:1px;
+text-transform:uppercase;
+color:var(--text-sub);
+margin-bottom:10px;
+}
+
+.peopleList{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.person{
+cursor:pointer;
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+gap:6px;
+overflow:hidden;
+}
+
+.personTop{
+width:100%;
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.person img{
+width:34px;
+height:34px;
+border-radius:50%;
+object-fit:cover;
+background:#1a1a1a;
+flex-shrink:0;
+}
+
+.personInfo{
+flex:1;
+overflow:hidden;
+}
+
+.personName{
+font-size:11px;
+font-weight:600;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.personCount{
+font-size:9px;
+color:var(--text-muted);
+margin-top:2px;
+}
+
+.personMovies{
+display:none;
+flex-wrap:wrap;
+gap:4px;
+margin-top:2px;
+padding-left:42px;
+}
+
+.person.active .personMovies{
+display:flex;
+}
+
+.movieChip{
+height:20px;
+padding:0 8px;
+border-radius:999px;
+background:#1a1a1a;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:8px;
+font-weight:600;
+color:#bbb;
+}
+
+/* ========= META ========= */
+
+.metaGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+}
+
+.metaCard{
+background:var(--surface);
+border-radius:14px;
+padding:12px;
+overflow:hidden;
+}
+
+.metaHead{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+.metaTitle{
+font-size:11px;
+font-weight:700;
+letter-spacing:1px;
+text-transform:uppercase;
+color:var(--text-sub);
+}
+
+.metaTotal{
+min-width:22px;
+height:22px;
+padding:0 7px;
+border-radius:999px;
+background:var(--surface-light);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:10px;
+font-weight:700;
+color:#fff;
+}
+
+.metaWrap{
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+}
+
+.metaItem{
+height:24px;
+padding:0 10px;
+border-radius:999px;
+background:var(--surface-light);
+display:flex;
+align-items:center;
+gap:6px;
+font-size:10px;
+font-weight:600;
+color:#ddd;
+white-space:nowrap;
+}
+
+.metaCount{
+font-size:9px;
+color:var(--text-muted);
+font-weight:700;
+}
+
+.empty{
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:12px;
+color:var(--text-sub);
+text-align:center;
+padding:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+<button
+class="headBtn"
+onclick="history.back()">
+&lsaquo;
+</button>
+
+<div class="logo">
+Stats
+</div>
+
+<div style="width:30px"></div>
+
+</header>
+
+<section class="mapWrap">
+
+<div class="hero">
+
+<div class="statBox">
+
+<h2 id="movieCount">
+0
+</h2>
+
+<p>
+Films
+</p>
+
+</div>
+
+<div class="statBox">
+
+<h2 id="timeCount">
+0h
+</h2>
+
+<p>
+Runtime
+</p>
+
+</div>
+
+<div class="statBox">
+
+<h2 id="ratingAvg">
+0.0
+</h2>
+
+<p>
+Average
+</p>
+
+</div>
+
+</div>
+
+<div class="peopleGrid">
+
+<div class="peopleCard">
+
+<div class="peopleTitle">
+Top Directors
+</div>
+
+<div
+class="peopleList"
+id="directorList">
+</div>
+
+</div>
+
+<div class="peopleCard">
+
+<div class="peopleTitle">
+Top Actors
+</div>
+
+<div
+class="peopleList"
+id="actorList">
+</div>
+
+</div>
+
+</div>
+
+<div class="metaGrid">
+
+<div class="metaCard">
+
+<div class="metaHead">
+
+<div class="metaTitle">
+Genres Watched
+</div>
+
+<div
+class="metaTotal"
+id="genreTotal">
+0
+</div>
+
+</div>
+
+<div
+class="metaWrap"
+id="genreWrap">
+</div>
+
+</div>
+
+<div class="metaCard">
+
+<div class="metaHead">
+
+<div class="metaTitle">
+Languages
+</div>
+
+<div
+class="metaTotal"
+id="langTotal">
+0
+</div>
+
+</div>
+
+<div
+class="metaWrap"
+id="langWrap">
+</div>
+
+</div>
+
+</div>
+
+<div class="metaCard">
+
+<div class="metaHead">
+
+<div class="metaTitle">
+Regions
+</div>
+
+<div
+class="metaTotal"
+id="regionTotal">
+0
+</div>
+
+</div>
+
+<div
+class="metaWrap"
+id="regionWrap">
+</div>
+
+</div>
+
+</section>
+
+<script>
+
+/* ========= MOVIES ========= */
+
+const movies=
+JSON.parse(
+localStorage.getItem("movies")
+)||[];
+
+/* ========= DATA ========= */
+
+const countryCount={};
+const directorCount={};
+const actorCount={};
+
+const genreCount={};
+const langCount={};
+
+/* ========= LOOP ========= */
+
+movies.forEach(movie=>{
+
+/* COUNTRY */
+
+if(movie.ct){
+
+let country=movie.ct;
+
+if(country==="United States of America"){
+
+country="United States";
+
+}
+
+countryCount[country]=
+(countryCount[country]||0)+1;
+
+}
+
+/* GENRES */
+
+if(movie.g){
+
+movie.g
+.split(',')
+.forEach(g=>{
+
+const genre=g.trim();
+
+if(!genre)return;
+
+genreCount[genre]=
+(genreCount[genre]||0)+1;
+
+});
+
+}
+
+/* LANGUAGES */
+
+if(movie.lg){
+
+movie.lg
+.split(',')
+.forEach(l=>{
+
+const lang=l.trim();
+
+if(!lang)return;
+
+langCount[lang]=
+(langCount[lang]||0)+1;
+
+});
+
+}
+
+/* DIRECTORS */
+
+if(movie.director?.name){
+
+const name=
+movie.director.name;
+
+if(!directorCount[name]){
+
+directorCount[name]={
+img:movie.director.img||'',
+movies:new Set()
+};
+
+}
+
+directorCount[name].movies.add(
+movie.t
+);
+
+}
+
+else if(movie.dr){
+
+const name=movie.dr;
+
+if(!directorCount[name]){
+
+directorCount[name]={
+img:'',
+movies:new Set()
+};
+
+}
+
+directorCount[name].movies.add(
+movie.t
+);
+
+}
+
+/* ACTORS */
+
+if(movie.cast){
+
+movie.cast
+.slice(0,2)
+.forEach(actor=>{
+
+const name=actor.name;
+
+if(!name)return;
+
+if(!actorCount[name]){
+
+actorCount[name]={
+img:actor.img||'',
+movies:new Set()
+};
+
+}
+
+actorCount[name].movies.add(
+movie.t
+);
+
+});
+
+}
+
+else if(movie.c){
+
+movie.c
+.split(',')
+.slice(0,2)
+.forEach(actor=>{
+
+const name=actor.trim();
+
+if(!name)return;
+
+if(!actorCount[name]){
+
+actorCount[name]={
+img:'',
+movies:new Set()
+};
+
+}
+
+actorCount[name].movies.add(
+movie.t
+);
+
+});
+
+}
+
+});
+
+/* ========= STATS ========= */
+
+const totalMovies=
+movies.length;
+
+const totalRuntime=
+movies.reduce((a,b)=>{
+
+return a+(Number(b.rt)||0);
+
+},0);
+
+const totalRating=
+movies.reduce((a,b)=>{
+
+return a+(Number(b.r)||0);
+
+},0);
+
+const avgRating=
+movies.length
+?(totalRating/movies.length).toFixed(1)
+:"0.0";
+
+/* ========= TIME ========= */
+
+function formatTime(mins){
+
+if(!mins){
+
+return{
+main:"0h",
+sub:"0 min • 0 days • 0 years"
+};
+
+}
+
+const hours=
+(mins/60).toFixed(1);
+
+const days=
+(mins/1440).toFixed(1);
+
+const years=
+(mins/525600).toFixed(2);
+
+return{
+
+main:`${hours}h`,
+
+sub:`
+${mins.toLocaleString()} min
+•
+${days} days
+•
+${years} years
+`
+
+};
+
+}
+
+document.getElementById(
+"movieCount"
+).innerText=
+totalMovies;
+
+const timeData=
+formatTime(totalRuntime);
+
+document.getElementById(
+"timeCount"
+).innerHTML=`
+
+${timeData.main}
+
+<div class="timeSub">
+
+${timeData.sub}
+
+</div>
+
+`;
+
+document.getElementById(
+"ratingAvg"
+).innerText=
+avgRating;
+
+/* ========= TOP PEOPLE ========= */
+
+const topDirectors=
+Object.entries(directorCount)
+.sort((a,b)=>
+
+b[1].movies.size-
+a[1].movies.size
+
+)
+.slice(0,5);
+
+const topActors=
+Object.entries(actorCount)
+.sort((a,b)=>
+
+b[1].movies.size-
+a[1].movies.size
+
+)
+.slice(0,5);
+
+/* ========= IMAGES ========= */
+
+async function fetchPersonImage(name){
+
+try{
+
+const res=await fetch(
+
+`https://api.themoviedb.org/3/search/person?api_key=8196a17676681ce722aaab7098785c6b&query=${encodeURIComponent(name)}`
+
+);
+
+const data=await res.json();
+
+const path=
+data.results?.[0]?.profile_path;
+
+return path
+?`https://image.tmdb.org/t/p/w185${path}`
+:'https://placehold.co/80x80/1a1a1a/888?text=%20';
+
+}catch{
+
+return'https://placehold.co/80x80/1a1a1a/888?text=%20';
+
+}
+
+}
+
+/* ========= RENDER PEOPLE ========= */
+
+async function renderPeople(){
+
+const dList=
+document.getElementById(
+"directorList"
+);
+
+const aList=
+document.getElementById(
+"actorList"
+);
+
+/* DIRECTORS */
+
+for(const[director,data]of topDirectors){
+
+const img=
+data.img
+?data.img
+:await fetchPersonImage(
+director
+);
+
+dList.innerHTML+=`
+
+<div class="person">
+
+<div class="personTop">
+
+<img src="${img}">
+
+<div class="personInfo">
+
+<div class="personName">
+${director}
+</div>
+
+<div class="personCount">
+${data.movies.size} films
+</div>
+
+</div>
+
+</div>
+
+<div class="personMovies">
+
+${[...data.movies]
+.map(movie=>`
+
+<div class="movieChip">
+${movie}
+</div>
+
+`).join('')}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+/* ACTORS */
+
+for(const[actor,data]of topActors){
+
+const img=
+data.img
+?data.img
+:await fetchPersonImage(
+actor
+);
+
+aList.innerHTML+=`
+
+<div class="person">
+
+<div class="personTop">
+
+<img src="${img}">
+
+<div class="personInfo">
+
+<div class="personName">
+${actor}
+</div>
+
+<div class="personCount">
+${data.movies.size} films
+</div>
+
+</div>
+
+</div>
+
+<div class="personMovies">
+
+${[...data.movies]
+.map(movie=>`
+
+<div class="movieChip">
+${movie}
+</div>
+
+`).join('')}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+}
+
+renderPeople();
+
+/* ========= TOGGLE ========= */
+
+document.addEventListener(
+'click',
+e=>{
+
+const person=
+e.target.closest('.person');
+
+if(!person)return;
+
+person.classList.toggle(
+'active'
+);
+
+}
+);
+
+/* ========= GENRES ========= */
+
+const genreWrap=
+document.getElementById(
+"genreWrap"
+);
+
+document.getElementById(
+"genreTotal"
+).innerText=
+Object.keys(genreCount).length;
+
+Object.entries(genreCount)
+.sort((a,b)=>b[1]-a[1])
+.forEach(([genre,count])=>{
+
+genreWrap.innerHTML+=`
+
+<div class="metaItem">
+
+${genre}
+
+<span class="metaCount">
+${count}
+</span>
+
+</div>
+
+`;
+
+});
+
+/* ========= LANGUAGES ========= */
+
+const langWrap=
+document.getElementById(
+"langWrap"
+);
+
+document.getElementById(
+"langTotal"
+).innerText=
+Object.keys(langCount).length;
+
+Object.entries(langCount)
+.sort((a,b)=>b[1]-a[1])
+.forEach(([lang,count])=>{
+
+langWrap.innerHTML+=`
+
+<div class="metaItem">
+
+${lang.toUpperCase()}
+
+<span class="metaCount">
+${count}
+</span>
+
+</div>
+
+`;
+
+});
+
+/* ========= REGIONS ========= */
+
+const regionWrap=
+document.getElementById(
+"regionWrap"
+);
+
+document.getElementById(
+"regionTotal"
+).innerText=
+Object.keys(countryCount).length;
+
+Object.entries(countryCount)
+.sort((a,b)=>b[1]-a[1])
+.forEach(([country,count])=>{
+
+regionWrap.innerHTML+=`
+
+<div class="metaItem">
+
+${country}
+
+<span class="metaCount">
+${count}
+</span>
+
+</div>
+
+`;
+
+});
+
+</script>
+
+</body>
+</html>
