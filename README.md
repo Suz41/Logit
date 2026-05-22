@@ -1,5 +1,7 @@
 # Log!t
 
+**Version:** v1.0.0
+
 A personal movie logging app built as a single-file web app. Search movies via TMDB, rate them, and track your watching habits — all stored locally in your browser.
 
 **Live:** https://suz41.github.io/Logit
@@ -39,3 +41,15 @@ A companion stats dashboard that visualizes your movie data:
 - HTML / CSS / JavaScript (single file)
 - TMDB API for movie data
 - localStorage for persistence
+
+## Changelog
+
+### v1.0.0 (2026-05-22)
+- Initial release
+- Movie search via TMDB
+- Rating system (0.5-5 stars)
+- Poster picker
+- Editable metadata
+- Month-grouped library
+- Grid layout toggle
+- Stats page with charts and heatmaps
