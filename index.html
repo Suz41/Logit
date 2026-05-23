@@ -417,8 +417,18 @@ body::-webkit-scrollbar { display: none; }
 
 .meta.editing .metaInput { display: block; }
 .meta.editing h4 { display: none; }
-.metaCheckbox { display: none; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: #888; cursor: pointer; }
-.metaCheckbox input { width: 16px; height: 16px; accent-color: #fff; }
+.metaCheckbox { display: none; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; color: #888; cursor: pointer; user-select: none; }
+.metaCheckbox .toggle-track { position: relative; width: 40px; height: 22px; background: #333; border-radius: 11px; transition: background .2s; flex-shrink: 0; }
+.metaCheckbox .toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #666; border-radius: 50%; transition: transform .2s, background .2s; }
+.metaCheckbox input { display: none; }
+.metaCheckbox input:checked ~ .toggle-track { background: #e94560; }
+.metaCheckbox input:checked ~ .toggle-track::after { transform: translateX(18px); background: #fff; }
+.sheetToggle { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 12px; color: #888; cursor: pointer; user-select: none; }
+.sheetToggle .toggle-track { position: relative; width: 40px; height: 22px; background: #333; border-radius: 11px; transition: background .2s; flex-shrink: 0; }
+.sheetToggle .toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #666; border-radius: 50%; transition: transform .2s, background .2s; }
+.sheetToggle input { display: none; }
+.sheetToggle input:checked ~ .toggle-track { background: #e94560; }
+.sheetToggle input:checked ~ .toggle-track::after { transform: translateX(18px); background: #fff; }
 .meta.editing .metaCheckbox { display: flex; }
 .meta.editing #mWatch { display: none; }
 .meta.editing .ratingBox { display: none; }
@@ -554,7 +564,9 @@ body::-webkit-scrollbar { display: none; }
             <p>Watch</p>
             <h4 id="mWatch"></h4>
             <label class="metaCheckbox" id="eWatchWrap">
-              <input type="checkbox" id="eWatch"> Rewatch
+              <input type="checkbox" id="eWatch">
+              <div class="toggle-track"></div>
+              Rewatch
             </label>
           </div>
         </div>
@@ -856,8 +868,9 @@ body::-webkit-scrollbar { display: none; }
       + '<img src="' + img(movie.poster_path) + '">'
       + '<h3>' + esc(movie.title) + '</h3>'
       + '<div class="rates">' + ratesHtml + '</div>'
-      + '<label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:#888;cursor:pointer;">'
-      + '<input type="checkbox" id="rewatchToggle" style="width:16px;height:16px;accent-color:#fff;">'
+      + '<label class="sheetToggle">'
+      + '<input type="checkbox" id="rewatchToggle">'
+      + '<div class="toggle-track"></div>'
       + 'Rewatch</label>'
       + '<button class="sheetAdd">Add Movie</button>'
       + '</div>';
