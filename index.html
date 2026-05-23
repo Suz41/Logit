@@ -160,6 +160,7 @@ body::-webkit-scrollbar { display: none; }
 }
 
 .movieDate .day { font-weight: 700; color: #888; }
+.movieDate .rewatch { color: #e94560; font-weight: 700; }
 
 .empty {
   height: 70vh;
@@ -446,6 +447,10 @@ body::-webkit-scrollbar { display: none; }
 
 .meta.editing .metaInput { display: block; }
 .meta.editing h4 { display: none; }
+.metaCheckbox { display: none; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: #888; cursor: pointer; }
+.metaCheckbox input { width: 16px; height: 16px; accent-color: #fff; }
+.meta.editing .metaCheckbox { display: flex; }
+.meta.editing #mWatch { display: none; }
 .meta.editing .ratingBox { display: none; }
 #saveBtn { display: none; }
 .meta.editing #saveBtn { display: block; }
@@ -579,7 +584,9 @@ body::-webkit-scrollbar { display: none; }
           <div>
             <p>Watch</p>
             <h4 id="mWatch"></h4>
-            <input class="metaInput" id="eWatch">
+            <label class="metaCheckbox" id="eWatchWrap">
+              <input type="checkbox" id="eWatch"> Rewatch
+            </label>
           </div>
         </div>
       </div>
@@ -772,7 +779,9 @@ body::-webkit-scrollbar { display: none; }
         var month = date.toLocaleString('default', { month: 'short' });
         moviesHtml += '<div class="movie" data-id="' + esc(movie.id) + '">'
           + '<img src="' + img(movie.sp) + '" loading="lazy">'
-          + '<div class="movieDate"><span class="day">' + day + '</span> ' + month + '</div>'
+          + '<div class="movieDate"><span class="day">' + day + '</span> ' + month
+          + (/^Rewatch/i.test(movie.w) ? ' <span class="rewatch">R</span>' : '')
+          + '</div>'
           + '</div>';
       });
 
@@ -1024,7 +1033,7 @@ body::-webkit-scrollbar { display: none; }
     $('eDirector').value = movie.dr;
     $('eLang').value = movie.lg;
     $('eCountry').value = movie.ct;
-    $('eWatch').value = movie.w;
+    $('eWatch').checked = /^Rewatch/i.test(movie.w);
     $('eLogged').value = movie.d;
     $('eCast').value = movie.c;
   }
@@ -1063,7 +1072,12 @@ body::-webkit-scrollbar { display: none; }
     m.dr = $('eDirector').value;
     m.lg = $('eLang').value;
     m.ct = $('eCountry').value;
-    m.w = $('eWatch').value;
+    if ($('eWatch').checked) {
+      var prevCount = state.movies.filter(function(x) { return x.t === m.t && x.id !== m.id; }).length;
+      m.w = 'Rewatch · ' + (prevCount + 1) + 'x';
+    } else {
+      m.w = '1st Watch';
+    }
     m.d = $('eLogged').value;
     m.c = $('eCast').value;
     save();
