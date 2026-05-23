@@ -471,67 +471,6 @@ body::-webkit-scrollbar { display: none; }
   font-weight: 700;
 }
 
-/* ========= IMPORT MODAL ========= */
-
-.importModal {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 350;
-  padding: 12px;
-  display: none;
-  flex-direction: column;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.importModal.active { display: flex; opacity: 1; }
-
-.importTextarea {
-  flex: 1;
-  width: 100%;
-  background: var(--surface2);
-  border: none;
-  outline: none;
-  border-radius: 12px;
-  padding: 14px;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  resize: none;
-  line-height: 1.5;
-}
-
-.importTextarea::placeholder { color: #555; }
-
-.importFooter {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-  align-items: center;
-}
-
-.importBtn {
-  flex: 1;
-  height: 44px;
-  border: none;
-  border-radius: 12px;
-  background: #fff;
-  color: #000;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.importBtn:disabled { opacity: 0.4; cursor: default; }
-
-.importStatus {
-  font-size: 11px;
-  color: #888;
-  text-align: center;
-  margin-top: 8px;
-  min-height: 16px;
-}
 </style>
 </head>
 <body>
@@ -540,7 +479,6 @@ body::-webkit-scrollbar { display: none; }
   <div class="logo">Log!t</div>
   <div class="headerRight">
     <button class="headBtn" id="openBtn">+</button>
-    <button class="headBtn" id="importBtn" title="Import Movies">&#8615;</button>
     <button class="headBtn" id="gridBtn">
       3
       <span class="gridTooltip">Columns: 3</span>
@@ -566,19 +504,6 @@ body::-webkit-scrollbar { display: none; }
     <input type="date" id="watchDate">
   </div>
   <div class="results" id="results"></div>
-</div>
-
-<!-- ========= IMPORT ========= -->
-<div class="importModal" id="importModal">
-  <div class="top">
-    <h3>Import Movies</h3>
-    <button class="close" id="closeImport">&times;</button>
-  </div>
-  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;One movie per line. Examples:&#10;tt0133093  4.5  2024-05-15    (IMDB ID — exact match)&#10;tmdb:27205  5  2024-01-10      (TMDB ID — exact match)&#10;#550                       (TMDB ID with #)&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
-  <div class="importFooter">
-    <button class="importBtn" id="importStartBtn">Import</button>
-  </div>
-  <div class="importStatus" id="importStatus"></div>
 </div>
 
 <!-- ========= META ========= -->
@@ -1100,28 +1025,6 @@ body::-webkit-scrollbar { display: none; }
     if (e.target === metaModal) closeMeta();
   };
 
-  // ========= IMPORT =========
-
-  var importModal = $('importModal');
-  var importText = $('importText');
-  var importStatus = $('importStatus');
-  var importStartBtn = $('importStartBtn');
-
-  $('importBtn').onclick = function() {
-    importModal.classList.add('active');
-    document.body.classList.add('no-scroll');
-    importText.value = '';
-    importStatus.textContent = '';
-    importText.focus();
-  };
-
-  $('closeImport').onclick = function() {
-    importModal.classList.remove('active');
-    document.body.classList.remove('no-scroll');
-    importText.value = '';
-    importStatus.textContent = '';
-  };
-
   function parseImportLine(line) {
     line = line.trim();
     if (!line) return null;
@@ -1207,111 +1110,6 @@ body::-webkit-scrollbar { display: none; }
     return today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
   }
 
-  importStartBtn.onclick = async function() {
-    var text = importText.value.trim();
-    if (!text) return;
-
-    var lines = text.split('\n').filter(function(l) { return l.trim().length > 0; });
-    if (lines.length === 0) return;
-
-    importStartBtn.disabled = true;
-    var imported = 0;
-    var failed = 0;
-    var total = lines.length;
-
-    for (var i = 0; i < lines.length; i++) {
-      var entry = parseImportLine(lines[i]);
-      if (!entry) { failed++; continue; }
-
-      importStatus.textContent = 'Importing ' + (i + 1) + '/' + total + ': ' + (entry.title || entry.tmdbId || entry.imdbId);
-
-      try {
-        var detail = null;
-
-        if (entry.tmdbId) {
-          // Direct lookup by TMDB ID — no guessing
-          detail = await tmdb(
-            'https://api.themoviedb.org/3/movie/' + entry.tmdbId + '?api_key=' + API + '&append_to_response=credits,images'
-          );
-        } else if (entry.imdbId) {
-          // Lookup by IMDB ID via TMDB find endpoint
-          var findData = await tmdb(
-            'https://api.themoviedb.org/3/find/' + entry.imdbId + '?api_key=' + API + '&external_source=imdb_id'
-          );
-          if (findData && findData.movie_results && findData.movie_results.length > 0) {
-            var foundId = findData.movie_results[0].id;
-            detail = await tmdb(
-              'https://api.themoviedb.org/3/movie/' + foundId + '?api_key=' + API + '&append_to_response=credits,images'
-            );
-          }
-        } else {
-          // Title search with year + smart matching
-          var searchUrl = 'https://api.themoviedb.org/3/search/movie?api_key=' + API + '&query=' + encodeURIComponent(entry.title);
-          if (entry.year) searchUrl += '&year=' + entry.year;
-          var searchData = await tmdb(searchUrl);
-
-          if (!searchData || !searchData.results || searchData.results.length === 0) { failed++; continue; }
-
-          var titleLow = entry.title.toLowerCase();
-          var candidates = searchData.results.filter(function(m) { return m.poster_path; });
-          if (candidates.length === 0) candidates = searchData.results;
-
-          var result = candidates[0];
-          for (var ci = 1; ci < candidates.length; ci++) {
-            var c = candidates[ci];
-            var cTitle = (c.title || '').toLowerCase();
-            if (cTitle === titleLow && (result.title || '').toLowerCase() !== titleLow) { result = c; continue; }
-            if (entry.year && c.release_date && result.release_date) {
-              var cYear = c.release_date.slice(0, 4);
-              var rYear = result.release_date.slice(0, 4);
-              if (cYear === entry.year && rYear !== entry.year) { result = c; }
-            }
-          }
-
-          detail = await tmdb(
-            'https://api.themoviedb.org/3/movie/' + result.id + '?api_key=' + API + '&append_to_response=credits,images'
-          );
-        }
-
-        if (!detail) { failed++; continue; }
-
-        var watch = watchType(detail.title || '');
-
-        state.movies.unshift({
-          id: crypto.randomUUID(),
-          t: detail.title || '',
-          yr: (detail.release_date || '').slice(0, 4),
-          rt: detail.runtime || 0,
-          g: (detail.genres || []).map(function(x) { return x.name; }).join(', '),
-          dr: ((detail.credits && detail.credits.crew ? detail.credits.crew.find(function(x) { return x.job === 'Director'; }) : null) || {}).name || '',
-          c: (detail.credits && detail.credits.cast ? detail.credits.cast.slice(0, 10).map(function(x) { return x.name; }) : []).join(', '),
-          lg: detail.original_language || '',
-          ct: (detail.production_countries && detail.production_countries[0] ? detail.production_countries[0].name : ''),
-          r: entry.rating || 3,
-          w: watch,
-          d: normalizeDate(entry.date),
-          sp: detail.poster_path || '',
-          p: (detail.images && detail.images.posters ? detail.images.posters.map(function(p) { return { u: p.file_path, l: p.iso_639_1 || 'N/A' }; }) : [])
-        });
-
-        imported++;
-      } catch (e) {
-        failed++;
-      }
-    }
-
-    save();
-    renderMovies();
-    importStatus.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
-    importStartBtn.disabled = false;
-
-    setTimeout(function() {
-      importModal.classList.remove('active');
-      document.body.classList.remove('no-scroll');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1500);
-  };
-
   // ========= KEYBOARD =========
 
   document.addEventListener('keydown', function(e) {
@@ -1320,9 +1118,6 @@ body::-webkit-scrollbar { display: none; }
         document.querySelector('.ratingSheet').remove();
       } else if (document.querySelector('.posterPicker')) {
         document.querySelector('.posterPicker').remove();
-      } else if (importModal.classList.contains('active')) {
-        importModal.classList.remove('active');
-        document.body.classList.remove('no-scroll');
       } else if (metaModal.classList.contains('active')) {
         closeMeta();
       } else if (modal.classList.contains('active')) {

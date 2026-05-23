@@ -400,26 +400,10 @@ Stats
 
 <button
 class="headBtn"
-onclick="window.location.href='about.html'"
-title="About"
-style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
-About
-</button>
-
-<button
-class="headBtn"
 onclick="openImportModal()"
 title="Import Movies"
 style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
 Import
-</button>
-
-<button
-class="headBtn"
-onclick="clearAllMovies()"
-title="Clear All Movies"
-style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;background:#e94560;">
-Clear
 </button>
 
 </header>
@@ -583,6 +567,22 @@ id="regionWrap">
 </div>
 
 </section>
+
+<div style="padding:10px;display:flex;flex-direction:column;gap:8px;margin-bottom:30px;">
+
+<button
+onclick="window.location.href='about.html'"
+style="height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+About
+</button>
+
+<button
+onclick="clearAllMovies()"
+style="height:44px;border:none;border-radius:12px;background:#e94560;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
+Clear All Movies
+</button>
+
+</div>
 
 <script>
 
