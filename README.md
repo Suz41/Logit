@@ -6,7 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
-- **v1.0.7** — Improved rewatch checkbox to styled toggle switch
+- **v1.0.7** — iOS-style toggle switches for rewatch (compact 38×22px)
 - **v1.0.6** — Rewatch checkbox in meta edit; rewatch badge on movie cards
 - **v1.0.5** — Slim export; import (JSON file, paste text, IMDB/TMDB IDs, freeform); rewatch toggle on add; poster re-fetch on import
 - **v1.0.4** — Moved import to stats page; About & Clear buttons moved to stats bottom
