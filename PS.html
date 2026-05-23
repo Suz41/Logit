@@ -319,6 +319,68 @@ text-align:center;
 padding:20px;
 }
 
+/* ========= IMPORT MODAL ========= */
+
+.importModal{
+position:fixed;
+inset:0;
+background:var(--bg);
+z-index:350;
+padding:12px;
+display:none;
+flex-direction:column;
+opacity:0;
+transition:opacity .2s;
+}
+
+.importModal.active{display:flex;opacity:1;}
+
+.importTextarea{
+flex:1;
+width:100%;
+background:var(--surface-light);
+border:none;
+outline:none;
+border-radius:12px;
+padding:14px;
+color:#fff;
+font-family:'Inter',sans-serif;
+font-size:13px;
+resize:none;
+line-height:1.5;
+}
+
+.importTextarea::placeholder{color:#555;}
+
+.importFooter{
+display:flex;
+gap:8px;
+margin-top:10px;
+align-items:center;
+}
+
+.importBtn{
+flex:1;
+height:44px;
+border:none;
+border-radius:12px;
+background:#fff;
+color:#000;
+font-size:14px;
+font-weight:700;
+cursor:pointer;
+}
+
+.importBtn:disabled{opacity:.4;cursor:default;}
+
+.importStatus{
+font-size:11px;
+color:#888;
+text-align:center;
+margin-top:8px;
+min-height:16px;
+}
+
 </style>
 </head>
 
@@ -346,6 +408,14 @@ About
 
 <button
 class="headBtn"
+onclick="openImportModal()"
+title="Import Movies"
+style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
+Import
+</button>
+
+<button
+class="headBtn"
 onclick="clearAllMovies()"
 title="Clear All Movies"
 style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;background:#e94560;">
@@ -353,6 +423,19 @@ Clear
 </button>
 
 </header>
+
+<!-- ========= IMPORT ========= -->
+<div class="importModal" id="importModal">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <h3 style="font-size:16px;font-weight:700;">Import Movies</h3>
+    <button class="headBtn" onclick="closeImportModal()" style="width:34px;height:34px;">&times;</button>
+  </div>
+  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;One movie per line. Examples:&#10;The Matrix, 4.5, 2024-05-15&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
+  <div class="importFooter">
+    <button class="importBtn" id="importStartBtn">Import</button>
+  </div>
+  <div class="importStatus" id="importStatus"></div>
+</div>
 
 <section class="mapWrap">
 
@@ -1061,6 +1144,125 @@ if(!confirm('Delete all movies? This cannot be undone.'))return;
 localStorage.removeItem('movies');
 location.reload();
 }
+
+/* ========= IMPORT ========= */
+
+var API='8196a17676681ce722aaab7098785c6b';
+
+function openImportModal(){
+document.getElementById('importModal').classList.add('active');
+document.body.style.overflow='hidden';
+document.getElementById('importText').value='';
+document.getElementById('importStatus').textContent='';
+document.getElementById('importText').focus();
+}
+
+function closeImportModal(){
+document.getElementById('importModal').classList.remove('active');
+document.body.style.overflow='';
+document.getElementById('importText').value='';
+document.getElementById('importStatus').textContent='';
+}
+
+function parseImportLine(line){
+line=line.trim();
+if(!line)return null;
+
+var date=null;
+var rating=null;
+var title=line;
+
+var dateMatch=line.match(/\b(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})\b/);
+if(!dateMatch)dateMatch=line.match(/\b(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})\b/);
+if(!dateMatch)dateMatch=line.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}[,\s]+\d{4})\b/i);
+if(dateMatch){date=dateMatch[1];title=title.replace(dateMatch[0],'');}
+
+var ratingMatch=line.match(/(?:★\s*)?(\d(?:\.\d)?)\s*\/\s*5/);
+if(!ratingMatch)ratingMatch=line.match(/(?:rating[:\s]*)?(\d(?:\.\d)?)(?!\s*[\/\d])/i);
+if(ratingMatch){var r=parseFloat(ratingMatch[1]);if(r>=0.5&&r<=5){rating=r;title=title.replace(ratingMatch[0],'');}}
+
+title=title.replace(/^[\s,;:\-–—|]+|[\s,;:\-–—|]+$/g,'').replace(/\s{2,}/g,' ').trim();
+if(!title)return null;
+
+return{title:title,rating:rating,date:date};
+}
+
+function normalizeDate(d){
+if(!d){var t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
+if(d.match(/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/))return d.replace(/\//g,'-');
+if(d.match(/^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/)){var p=d.split(/[-\/]/);return p[2]+'-'+p[0].padStart(2,'0')+'-'+p[1].padStart(2,'0');}
+var parsed=new Date(d);
+if(!isNaN(parsed.getTime()))return parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
+var t2=new Date();return t2.getFullYear()+'-'+String(t2.getMonth()+1).padStart(2,'0')+'-'+String(t2.getDate()).padStart(2,'0');
+}
+
+function watchType(title){
+var count=movies.filter(function(m){return m.t===title;}).length;
+if(count===0)return'1st Watch';
+return'Rewatch \u00b7 '+(count+1)+'x';
+}
+
+async function tmdb(url){
+try{var r=await fetch(url);if(!r.ok)return null;return await r.json();}catch(e){return null;}
+}
+
+document.getElementById('importStartBtn').onclick=async function(){
+var text=document.getElementById('importText').value.trim();
+if(!text)return;
+
+var lines=text.split('\n').filter(function(l){return l.trim().length>0;});
+if(lines.length===0)return;
+
+var btn=document.getElementById('importStartBtn');
+btn.disabled=true;
+var statusEl=document.getElementById('importStatus');
+var imported=0;
+var failed=0;
+var total=lines.length;
+
+for(var i=0;i<lines.length;i++){
+var entry=parseImportLine(lines[i]);
+if(!entry){failed++;continue;}
+
+statusEl.textContent='Importing '+(i+1)+'/'+total+': '+entry.title;
+
+try{
+var searchData=await tmdb('https://api.themoviedb.org/3/search/movie?api_key='+API+'&query='+encodeURIComponent(entry.title));
+if(!searchData||!searchData.results||searchData.results.length===0){failed++;continue;}
+
+var result=searchData.results.find(function(m){return m.poster_path;})||searchData.results[0];
+var detail=await tmdb('https://api.themoviedb.org/3/movie/'+result.id+'?api_key='+API+'&append_to_response=credits,images');
+if(!detail){failed++;continue;}
+
+var watch=watchType(detail.title||'');
+
+movies.unshift({
+id:crypto.randomUUID(),
+t:detail.title||'',
+yr:(detail.release_date||'').slice(0,4),
+rt:detail.runtime||0,
+g:(detail.genres||[]).map(function(x){return x.name;}).join(', '),
+dr:((detail.credits&&detail.credits.crew?detail.credits.crew.find(function(x){return x.job==='Director';}):null)||{}).name||'',
+c:(detail.credits&&detail.credits.cast?detail.credits.cast.slice(0,10).map(function(x){return x.name;}):[]).join(', '),
+lg:detail.original_language||'',
+ct:(detail.production_countries&&detail.production_countries[0]?detail.production_countries[0].name:''),
+r:entry.rating||3,
+w:watch,
+d:normalizeDate(entry.date),
+sp:detail.poster_path||'',
+p:(detail.images&&detail.images.posters?detail.images.posters.map(function(p){return{u:p.file_path,l:p.iso_639_1||'N/A'};}):[])
+});
+
+imported++;
+}catch(e){failed++;}
+}
+
+localStorage.setItem('movies',JSON.stringify(movies));
+statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
+btn.disabled=false;
+
+setTimeout(function(){closeImportModal();location.reload();},1500);
+};
 
 </script>
 
