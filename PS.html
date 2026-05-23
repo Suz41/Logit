@@ -635,7 +635,6 @@ const directorCount={};
 const actorCount={};
 
 const genreCount={};
-const genreMovies={};
 const langCount={};
 const langMovies={};
 const regionCount={};
@@ -678,8 +677,6 @@ if(!genre)return;
 
 genreCount[genre]=
 (genreCount[genre]||0)+1;
-if(!genreMovies[genre])genreMovies[genre]=[];
-genreMovies[genre].push(movie.t);
 
 });
 
@@ -1104,11 +1101,9 @@ Object.entries(genreCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([genre,count])=>{
 
-var moviesHtml=(genreMovies[genre]||[]).map(function(m){return '<div class="movieChip">'+esc(m)+'</div>';}).join('');
-
 genreWrap.innerHTML+=`
 
-<div class="metaItem" onclick="this.classList.toggle('active')">
+<div class="metaItem">
 
 <div class="metaItemHead">
 
@@ -1118,10 +1113,6 @@ ${genre}
 ${count}
 </span>
 
-</div>
-
-<div class="metaMovies">
-${moviesHtml}
 </div>
 
 </div>
