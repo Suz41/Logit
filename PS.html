@@ -430,7 +430,7 @@ Clear
     <h3 style="font-size:16px;font-weight:700;">Import Movies</h3>
     <button class="headBtn" onclick="closeImportModal()" style="width:34px;height:34px;">&times;</button>
   </div>
-  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;One movie per line. Examples:&#10;The Matrix, 4.5, 2024-05-15&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
+  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;One movie per line. Examples:&#10;tt0133093  4.5  2024-05-15    (IMDB ID — exact match)&#10;tmdb:27205  5  2024-01-10      (TMDB ID — exact match)&#10;#550                       (TMDB ID with #)&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
   <div class="importFooter">
     <button class="importBtn" id="importStartBtn">Import</button>
   </div>
@@ -1170,7 +1170,16 @@ if(!line)return null;
 
 var date=null;
 var rating=null;
+var year=null;
+var tmdbId=null;
+var imdbId=null;
 var title=line;
+
+var imdbMatch=title.match(/\b(tt\d{7,8})\b/i);
+if(imdbMatch){imdbId=imdbMatch[1];title=title.replace(imdbMatch[0],'');}
+
+var tmdbMatch=title.match(/\b(?:tmdb[:\s]*|#)(\d{2,})\b/i);
+if(tmdbMatch){tmdbId=tmdbMatch[1];title=title.replace(tmdbMatch[0],'');}
 
 var dateMatch=line.match(/\b(\d{4}[-\/]\d{1,2}[-\/]\d{1,2})\b/);
 if(!dateMatch)dateMatch=line.match(/\b(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})\b/);
@@ -1181,10 +1190,13 @@ var ratingMatch=line.match(/(?:★\s*)?(\d(?:\.\d)?)\s*\/\s*5/);
 if(!ratingMatch)ratingMatch=line.match(/(?:rating[:\s]*)?(\d(?:\.\d)?)(?!\s*[\/\d])/i);
 if(ratingMatch){var r=parseFloat(ratingMatch[1]);if(r>=0.5&&r<=5){rating=r;title=title.replace(ratingMatch[0],'');}}
 
-title=title.replace(/^[\s,;:\-–—|]+|[\s,;:\-–—|]+$/g,'').replace(/\s{2,}/g,' ').trim();
-if(!title)return null;
+var yearMatch=title.match(/\b(19\d{2}|20\d{2})\b/);
+if(yearMatch&&!date){year=yearMatch[1];title=title.replace(yearMatch[0],'');}else if(date){var dp=date.match(/\d{4}/);if(dp)year=dp[0];}
 
-return{title:title,rating:rating,date:date};
+title=title.replace(/^[\s,;:\-–—|]+|[\s,;:\-–—|]+$/g,'').replace(/\s{2,}/g,' ').trim();
+if(!title&&!tmdbId&&!imdbId)return null;
+
+return{title:title,rating:rating,date:date,year:year,tmdbId:tmdbId,imdbId:imdbId};
 }
 
 function normalizeDate(d){
@@ -1224,14 +1236,42 @@ for(var i=0;i<lines.length;i++){
 var entry=parseImportLine(lines[i]);
 if(!entry){failed++;continue;}
 
-statusEl.textContent='Importing '+(i+1)+'/'+total+': '+entry.title;
+statusEl.textContent='Importing '+(i+1)+'/'+total+': '+(entry.title||entry.tmdbId||entry.imdbId);
 
 try{
-var searchData=await tmdb('https://api.themoviedb.org/3/search/movie?api_key='+API+'&query='+encodeURIComponent(entry.title));
+var detail=null;
+
+if(entry.tmdbId){
+detail=await tmdb('https://api.themoviedb.org/3/movie/'+entry.tmdbId+'?api_key='+API+'&append_to_response=credits,images');
+}else if(entry.imdbId){
+var findData=await tmdb('https://api.themoviedb.org/3/find/'+entry.imdbId+'?api_key='+API+'&external_source=imdb_id');
+if(findData&&findData.movie_results&&findData.movie_results.length>0){
+var foundId=findData.movie_results[0].id;
+detail=await tmdb('https://api.themoviedb.org/3/movie/'+foundId+'?api_key='+API+'&append_to_response=credits,images');
+}
+}else{
+var searchUrl='https://api.themoviedb.org/3/search/movie?api_key='+API+'&query='+encodeURIComponent(entry.title);
+if(entry.year)searchUrl+='&year='+entry.year;
+var searchData=await tmdb(searchUrl);
 if(!searchData||!searchData.results||searchData.results.length===0){failed++;continue;}
 
-var result=searchData.results.find(function(m){return m.poster_path;})||searchData.results[0];
-var detail=await tmdb('https://api.themoviedb.org/3/movie/'+result.id+'?api_key='+API+'&append_to_response=credits,images');
+var titleLow=entry.title.toLowerCase();
+var candidates=searchData.results.filter(function(m){return m.poster_path;});
+if(candidates.length===0)candidates=searchData.results;
+
+var result=candidates[0];
+for(var ci=1;ci<candidates.length;ci++){
+var c=candidates[ci];
+var cTitle=(c.title||'').toLowerCase();
+if(cTitle===titleLow&&(result.title||'').toLowerCase()!==titleLow){result=c;continue;}
+if(entry.year&&c.release_date&&result.release_date){
+var cYear=c.release_date.slice(0,4);
+var rYear=result.release_date.slice(0,4);
+if(cYear===entry.year&&rYear!==entry.year){result=c;}
+}
+}
+detail=await tmdb('https://api.themoviedb.org/3/movie/'+result.id+'?api_key='+API+'&append_to_response=credits,images');
+}
 if(!detail){failed++;continue;}
 
 var watch=watchType(detail.title||'');
