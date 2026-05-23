@@ -423,7 +423,14 @@ Import
     <h3 style="font-size:16px;font-weight:700;">Import Movies</h3>
     <button class="headBtn" onclick="closeImportModal()" style="width:34px;height:34px;">&times;</button>
   </div>
-  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;JSON (from Log!t export):&#10;Paste the full exported JSON array — imports directly with all data.&#10;&#10;One movie per line:&#10;tt0133093  4.5  2024-05-15    (IMDB ID)&#10;tmdb:27205  5  2024-01-10      (TMDB ID)&#10;#550                       (TMDB ID with #)&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Pipe format:&#10;Movie Name | Rating | IMDb/TMDb_ID | Date | RewatchStatus&#10;The Matrix | 5 | tmdb:603 | 2024-05-15 | rewatch&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <label style="flex:1;height:44px;border-radius:12px;background:var(--surface-light);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#fff;gap:6px;">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload JSON
+      <input type="file" id="fileInput" accept=".json" style="display:none;">
+    </label>
+  </div>
+  <textarea class="importTextarea" id="importText" placeholder="Or paste text here...&#10;&#10;JSON (from Log!t export):&#10;Paste the full exported JSON array — imports directly with all data.&#10;&#10;One movie per line:&#10;tt0133093  4.5  2024-05-15    (IMDB ID)&#10;tmdb:27205  5  2024-01-10      (TMDB ID)&#10;#550                       (TMDB ID with #)&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Pipe format:&#10;Movie Name | Rating | IMDb/TMDb_ID | Date | RewatchStatus&#10;The Matrix | 5 | tmdb:603 | 2024-05-15 | rewatch&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
   <div class="importFooter">
     <button class="importBtn" id="importStartBtn">Import</button>
   </div>
@@ -1262,6 +1269,22 @@ async function tmdb(url){
 try{var r=await fetch(url);if(!r.ok)return null;return await r.json();}catch(e){return null;}
 }
 
+/* File upload handler */
+document.getElementById('fileInput').addEventListener('change',function(e){
+var file=e.target.files[0];
+if(!file)return;
+var reader=new FileReader();
+reader.onload=function(ev){
+document.getElementById('importText').value=ev.target.result;
+document.getElementById('importStatus').textContent='File loaded: '+file.name;
+};
+reader.readAsText(file);
+});
+
+function isSlimExport(parsed){
+return parsed.length>0&&parsed[0].tmdb_id!==undefined&&!parsed[0].p&&!parsed[0].g;
+}
+
 document.getElementById('importStartBtn').onclick=async function(){
 var text=document.getElementById('importText').value.trim();
 if(!text)return;
@@ -1271,11 +1294,71 @@ if(text.charAt(0)==='['){
 try{
 var parsed=JSON.parse(text);
 if(!Array.isArray(parsed))throw new Error();
+
+/* Slim export — re-fetch full data from TMDB */
+if(isSlimExport(parsed)){
+if(!API){
+document.getElementById('importStatus').textContent='TMDB API key required to import slim export. Set it from main page.';
+return;
+}
+var btn=document.getElementById('importStartBtn');
+btn.disabled=true;
+var statusEl=document.getElementById('importStatus');
+var existingTmdbIds=new Set(movies.map(function(m){return m.tmdb_id||'';}));
+var existingIds=new Set(movies.map(function(m){return m.id;}));
+var imported=0;
+var failed=0;
+var total=parsed.length;
+
+for(var i=0;i<parsed.length;i++){
+var entry=parsed[i];
+if((!entry.t&&!entry.id)||!entry.tmdb_id){failed++;continue;}
+if(existingIds.has(entry.id)||existingTmdbIds.has(entry.tmdb_id)){continue;}
+
+statusEl.textContent='Fetching '+(i+1)+'/'+total+': '+entry.t;
+
+try{
+var detail=await tmdb('https://api.themoviedb.org/3/movie/'+entry.tmdb_id+'?api_key='+API+'&append_to_response=credits,images');
+if(!detail){failed++;continue;}
+
+var watch=entry.w||'1st Watch';
+
+movies.unshift({
+id:entry.id||crypto.randomUUID(),
+tmdb_id:String(detail.id||entry.tmdb_id||''),
+t:detail.title||entry.t||'',
+yr:(detail.release_date||'').slice(0,4)||entry.yr||'',
+rt:detail.runtime||0,
+g:(detail.genres||[]).map(function(x){return x.name;}).join(', '),
+dr:((detail.credits&&detail.credits.crew?detail.credits.crew.find(function(x){return x.job==='Director';}):null)||{}).name||'',
+c:(detail.credits&&detail.credits.cast?detail.credits.cast.slice(0,10).map(function(x){return x.name;}):[]).join(', '),
+lg:detail.original_language||'',
+ct:(detail.production_countries&&detail.production_countries[0]?detail.production_countries[0].name:''),
+r:entry.r||3,
+w:watch,
+d:entry.d||normalizeDate(null),
+sp:detail.poster_path||entry.sp||'',
+p:(detail.images&&detail.images.posters?detail.images.posters.map(function(p){return{u:p.file_path,l:p.iso_639_1||'N/A'};}):[])
+});
+imported++;
+}catch(e){failed++;}
+}
+
+localStorage.setItem('movies',JSON.stringify(movies));
+statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
+btn.disabled=false;
+setTimeout(function(){closeImportModal();location.reload();},1500);
+return;
+}
+
+/* Full JSON import (legacy format with all data) */
 var count=0;
 var existingIds=new Set(movies.map(function(m){return m.id;}));
+var existingTmdbFull=new Set(movies.map(function(m){return m.tmdb_id||'';}));
 parsed.forEach(function(m){
 if(!m.t&&!m.id)return;
 if(existingIds.has(m.id))return;
+if(m.tmdb_id&&existingTmdbFull.has(m.tmdb_id))return;
 movies.unshift(m);
 count++;
 });
@@ -1350,6 +1433,7 @@ var watch=entry.rewatch?'Rewatch':watchType(detail.title||'');
 
 movies.unshift({
 id:crypto.randomUUID(),
+tmdb_id:String(detail.id||''),
 t:detail.title||'',
 yr:(detail.release_date||'').slice(0,4),
 rt:detail.runtime||0,
@@ -1398,7 +1482,19 @@ location.reload();
 /* ========= EXPORT ========= */
 
 function exportMovies(){
-var data=JSON.stringify(movies,null,2);
+var slim=movies.map(function(m){
+return{
+id:m.id,
+t:m.t,
+tmdb_id:m.tmdb_id||'',
+yr:m.yr,
+r:m.r,
+d:m.d,
+w:m.w,
+sp:m.sp
+};
+});
+var data=JSON.stringify(slim,null,2);
 var blob=new Blob([data],{type:'application/json'});
 var url=URL.createObjectURL(blob);
 var a=document.createElement('a');

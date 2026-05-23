@@ -845,6 +845,9 @@ body::-webkit-scrollbar { display: none; }
       + '<img src="' + img(movie.poster_path) + '">'
       + '<h3>' + esc(movie.title) + '</h3>'
       + '<div class="rates">' + ratesHtml + '</div>'
+      + '<label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:#888;cursor:pointer;">'
+      + '<input type="checkbox" id="rewatchToggle" style="width:16px;height:16px;accent-color:#fff;">'
+      + 'Rewatch</label>'
       + '<button class="sheetAdd">Add Movie</button>'
       + '</div>';
 
@@ -882,10 +885,18 @@ body::-webkit-scrollbar { display: none; }
       }
 
       // Calculate watch type BEFORE adding
-      var watch = watchType(d.title || '');
+      var isRewatch = sheet.querySelector('#rewatchToggle').checked;
+      var watch;
+      if (isRewatch) {
+        var prevCount = state.movies.filter(function(m) { return m.t === (d.title || ''); }).length;
+        watch = 'Rewatch · ' + (prevCount + 1) + 'x';
+      } else {
+        watch = watchType(d.title || '');
+      }
 
       state.movies.unshift({
         id: crypto.randomUUID(),
+        tmdb_id: String(d.id || ''),
         t: d.title || '',
         yr: (d.release_date || '').slice(0, 4),
         rt: d.runtime || 0,
