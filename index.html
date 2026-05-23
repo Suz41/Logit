@@ -733,7 +733,7 @@ body::-webkit-scrollbar { display: none; }
     keys.forEach(function(key, index) {
       var group = grouped[key];
       var section = document.createElement('div');
-      section.className = 'monthSection' + (index === 0 ? ' active' : '');
+      section.className = 'monthSection';
 
       var moviesHtml = '';
       group.movies.forEach(function(movie) {
