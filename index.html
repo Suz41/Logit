@@ -418,17 +418,16 @@ body::-webkit-scrollbar { display: none; }
 .meta.editing .metaInput { display: block; }
 .meta.editing h4 { display: none; }
 .metaCheckbox { display: none; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; color: #888; cursor: pointer; user-select: none; }
-.metaCheckbox .toggle-track { position: relative; width: 40px; height: 22px; background: #333; border-radius: 11px; transition: background .2s; flex-shrink: 0; }
-.metaCheckbox .toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #666; border-radius: 50%; transition: transform .2s, background .2s; }
-.metaCheckbox input { display: none; }
-.metaCheckbox input:checked ~ .toggle-track { background: #e94560; }
-.metaCheckbox input:checked ~ .toggle-track::after { transform: translateX(18px); background: #fff; }
-.sheetToggle { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 12px; color: #888; cursor: pointer; user-select: none; }
-.sheetToggle .toggle-track { position: relative; width: 40px; height: 22px; background: #333; border-radius: 11px; transition: background .2s; flex-shrink: 0; }
-.sheetToggle .toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #666; border-radius: 50%; transition: transform .2s, background .2s; }
+.metaCheckbox .toggle-track,
+.sheetToggle .toggle-track { position: relative; width: 51px; height: 31px; background: #39393D; border-radius: 31px; transition: background 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3); }
+.metaCheckbox .toggle-track::after,
+.sheetToggle .toggle-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; background: #fff; border-radius: 50%; transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.metaCheckbox input,
 .sheetToggle input { display: none; }
+.metaCheckbox input:checked ~ .toggle-track,
 .sheetToggle input:checked ~ .toggle-track { background: #e94560; }
-.sheetToggle input:checked ~ .toggle-track::after { transform: translateX(18px); background: #fff; }
+.metaCheckbox input:checked ~ .toggle-track::after,
+.sheetToggle input:checked ~ .toggle-track::after { transform: translateX(20px); }
 .meta.editing .metaCheckbox { display: flex; }
 .meta.editing #mWatch { display: none; }
 .meta.editing .ratingBox { display: none; }
