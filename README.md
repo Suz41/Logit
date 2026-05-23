@@ -1,6 +1,6 @@
 # Log!t
 
-**Version:** v1.0.2
+**Version:** v1.0.3
 **Created by:** [Suz41](https://github.com/Suz41)
 **Live:** https://suz41.github.io/Logit
 
@@ -18,6 +18,7 @@ HTML / CSS / JS (single file) | TMDB API | localStorage | GitHub Pages
 
 ## Changelog
 
+- **v1.0.3** — Added bulk import feature (paste freeform text to import movies)
 - **v1.0.2** — Added about.html (tech stack, storage usage)
 - **v1.0.1** — Added Clear All button in Stats page
 - **v1.0.0** — Initial release
