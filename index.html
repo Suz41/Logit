@@ -571,7 +571,21 @@ body::-webkit-scrollbar { display: none; }
 (function() {
   'use strict';
 
-  const API = '8196a17676681ce722aaab7098785c6b';
+  const API = localStorage.getItem('tmdb_key') || '';
+
+  if (!API) {
+    document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;padding:20px;background:#0d0d0d;color:#fff;font-family:Inter,sans-serif;text-align:center;">'
+      + '<h2 style="font-family:Poppins,sans-serif;margin-bottom:10px;">Welcome to Log!t</h2>'
+      + '<p style="color:#888;font-size:13px;margin-bottom:20px;">Enter your TMDB API key to get started.<br><a href="https://www.themoviedb.org/settings/api" target="_blank" style="color:#e94560;">Get one free at themoviedb.org</a></p>'
+      + '<input id="keyInput" type="text" placeholder="TMDB API Key" style="width:100%;max-width:320px;height:46px;background:#1a1a1a;border:none;border-radius:12px;padding:0 14px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;">'
+      + '<button id="keySave" style="width:100%;max-width:320px;height:44px;border:none;border-radius:12px;background:#fff;color:#000;font-size:14px;font-weight:700;cursor:pointer;">Save Key</button>'
+      + '</div>';
+    document.getElementById('keySave').onclick = function() {
+      var v = document.getElementById('keyInput').value.trim();
+      if (v) { localStorage.setItem('tmdb_key', v); location.reload(); }
+    };
+    throw new Error('No API key');
+  }
 
   const state = {
     movies: JSON.parse(localStorage.getItem('movies')) || [],

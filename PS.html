@@ -398,6 +398,14 @@ onclick="history.back()">
 Stats
 </div>
 
+<div style="display:flex;gap:6px;">
+<button
+class="headBtn"
+onclick="exportMovies()"
+title="Export Movies"
+style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
+Export
+</button>
 <button
 class="headBtn"
 onclick="openImportModal()"
@@ -405,6 +413,7 @@ title="Import Movies"
 style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
 Import
 </button>
+</div>
 
 </header>
 
@@ -414,7 +423,7 @@ Import
     <h3 style="font-size:16px;font-weight:700;">Import Movies</h3>
     <button class="headBtn" onclick="closeImportModal()" style="width:34px;height:34px;">&times;</button>
   </div>
-  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;One movie per line. Examples:&#10;tt0133093  4.5  2024-05-15    (IMDB ID — exact match)&#10;tmdb:27205  5  2024-01-10      (TMDB ID — exact match)&#10;#550                       (TMDB ID with #)&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Pipe format:&#10;Movie Name | Rating | IMDb/TMDb_ID | Date | RewatchStatus&#10;The Matrix | 5 | tmdb:603 | 2024-05-15 | rewatch&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
+  <textarea class="importTextarea" id="importText" placeholder="Paste your movie list here...&#10;&#10;JSON (from Log!t export):&#10;Paste the full exported JSON array — imports directly with all data.&#10;&#10;One movie per line:&#10;tt0133093  4.5  2024-05-15    (IMDB ID)&#10;tmdb:27205  5  2024-01-10      (TMDB ID)&#10;#550                       (TMDB ID with #)&#10;Inception 3.5&#10;Interstellar - 5/5 - 2024-01-10&#10;Fight Club  2023-12-25  4&#10;&#10;Pipe format:&#10;Movie Name | Rating | IMDb/TMDb_ID | Date | RewatchStatus&#10;The Matrix | 5 | tmdb:603 | 2024-05-15 | rewatch&#10;&#10;Ratings default to 3. Dates default to today."></textarea>
   <div class="importFooter">
     <button class="importBtn" id="importStartBtn">Import</button>
   </div>
@@ -577,6 +586,12 @@ About
 </button>
 
 <button
+onclick="setApiKey()"
+style="height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+TMDB API Key
+</button>
+
+<button
 onclick="clearAllMovies()"
 style="height:44px;border:none;border-radius:12px;background:#e94560;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
 Clear All Movies
@@ -707,7 +722,6 @@ movie.t
 if(movie.cast){
 
 movie.cast
-.slice(0,2)
 .forEach(actor=>{
 
 const name=actor.name;
@@ -735,7 +749,6 @@ else if(movie.c){
 
 movie.c
 .split(',')
-.slice(0,2)
 .forEach(actor=>{
 
 const name=actor.trim();
@@ -880,7 +893,7 @@ try{
 
 const res=await fetch(
 
-`https://api.themoviedb.org/3/search/person?api_key=8196a17676681ce722aaab7098785c6b&query=${encodeURIComponent(name)}`
+`https://api.themoviedb.org/3/search/person?api_key=${API}&query=${encodeURIComponent(name)}`
 
 );
 
@@ -1147,7 +1160,7 @@ location.reload();
 
 /* ========= IMPORT ========= */
 
-var API='8196a17676681ce722aaab7098785c6b';
+var API=localStorage.getItem('tmdb_key')||'';
 
 function openImportModal(){
 document.getElementById('importModal').classList.add('active');
@@ -1253,8 +1266,36 @@ document.getElementById('importStartBtn').onclick=async function(){
 var text=document.getElementById('importText').value.trim();
 if(!text)return;
 
+/* JSON import (exported from Log!t) */
+if(text.charAt(0)==='['){
+try{
+var parsed=JSON.parse(text);
+if(!Array.isArray(parsed))throw new Error();
+var count=0;
+var existingIds=new Set(movies.map(function(m){return m.id;}));
+parsed.forEach(function(m){
+if(!m.t&&!m.id)return;
+if(existingIds.has(m.id))return;
+movies.unshift(m);
+count++;
+});
+localStorage.setItem('movies',JSON.stringify(movies));
+document.getElementById('importStatus').textContent=count+' imported from JSON';
+setTimeout(function(){closeImportModal();location.reload();},1500);
+return;
+}catch(e){
+document.getElementById('importStatus').textContent='Invalid JSON format';
+return;
+}
+}
+
 var lines=text.split('\n').filter(function(l){return l.trim().length>0;});
 if(lines.length===0)return;
+
+if(!API){
+document.getElementById('importStatus').textContent='TMDB import requires an API key. Set it from the main page.';
+return;
+}
 
 var btn=document.getElementById('importStartBtn');
 btn.disabled=true;
@@ -1334,6 +1375,40 @@ btn.disabled=false;
 
 setTimeout(function(){closeImportModal();location.reload();},1500);
 };
+
+/* ========= API KEY ========= */
+
+function setApiKey(){
+var current=localStorage.getItem('tmdb_key')||'';
+var key=prompt('Enter your TMDB API Key:',current);
+if(key!==null){
+key=key.trim();
+if(key){
+localStorage.setItem('tmdb_key',key);
+alert('API key saved! Reload to apply.');
+location.reload();
+}else if(key===''){
+localStorage.removeItem('tmdb_key');
+alert('API key removed.');
+location.reload();
+}
+}
+}
+
+/* ========= EXPORT ========= */
+
+function exportMovies(){
+var data=JSON.stringify(movies,null,2);
+var blob=new Blob([data],{type:'application/json'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;
+a.download='logit-movies-'+new Date().toISOString().slice(0,10)+'.json';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
 
 </script>
 
