@@ -6,6 +6,10 @@
 <title>Log!t</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="firebase-sync.js"></script>
 <style>
 :root {
   --grid: 3;
@@ -645,6 +649,7 @@ body::-webkit-scrollbar { display: none; }
 
   function save() {
     localStorage.setItem('movies', JSON.stringify(state.movies));
+    if (LogitSync.isConfigured()) LogitSync.push(state.movies);
   }
 
   function loadMovies() {
@@ -772,6 +777,26 @@ body::-webkit-scrollbar { display: none; }
 
   loadMovies();
   renderMovies();
+
+  // ========= FIREBASE SYNC =========
+  if (LogitSync.isConfigured()) {
+    LogitSync.init().then(function(ok) {
+      if (ok) return LogitSync.pull();
+      return null;
+    }).then(function(remote) {
+      if (remote && remote.length > 0) {
+        if (state.movies.length === 0) {
+          state.movies = remote;
+          save();
+          renderMovies();
+        } else if (remote.length > state.movies.length) {
+          state.movies = LogitSync.merge(state.movies, remote);
+          save();
+          renderMovies();
+        }
+      }
+    });
+  }
 
   // ========= ADD MODAL =========
 

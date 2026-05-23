@@ -17,6 +17,10 @@ href="https://fonts.googleapis.com">
 <link
 href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
 rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="firebase-sync.js"></script>
 
 <style>
 
@@ -398,7 +402,7 @@ onclick="history.back()">
 Stats
 </div>
 
-<div style="display:flex;gap:6px;">
+<div style="display:flex;gap:6px;align-items:center;">
 <button
 class="headBtn"
 onclick="exportMovies()"
@@ -413,6 +417,7 @@ title="Import Movies"
 style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
 Import
 </button>
+<span id="syncDot" style="display:none;width:8px;height:8px;border-radius:50%;background:#e94560;flex-shrink:0;" title="Sync status"></span>
 </div>
 
 </header>
@@ -435,6 +440,26 @@ Import
     <button class="importBtn" id="importStartBtn">Import</button>
   </div>
   <div class="importStatus" id="importStatus"></div>
+</div>
+
+<!-- ========= FIREBASE SETUP ========= -->
+<div class="importModal" id="firebaseModal">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <h3 style="font-size:16px;font-weight:700;">Cloud Sync Setup</h3>
+    <button class="headBtn" onclick="closeFirebaseSetup()" style="width:34px;height:34px;">&times;</button>
+  </div>
+  <p style="font-size:12px;color:#888;margin-bottom:10px;line-height:1.5;">
+    1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:#e94560;">console.firebase.google.com</a><br>
+    2. Create a project (or use existing)<br>
+    3. Enable <b>Anonymous</b> auth (Authentication &gt; Sign-in method)<br>
+    4. Create a <b>Realtime Database</b> (start in test mode)<br>
+    5. Copy your web app config below
+  </p>
+  <textarea class="importTextarea" id="firebaseConfigInput" placeholder='Paste your Firebase config JSON here, e.g.:&#10;{&#10;  "apiKey": "...",&#10;  "authDomain": "...",&#10;  "databaseURL": "...",&#10;  "projectId": "...",&#10;  "storageBucket": "...",&#10;  "messagingSenderId": "...",&#10;  "appId": "..."&#10;}'></textarea>
+  <div class="importFooter">
+    <button class="importBtn" id="firebaseSaveBtn" onclick="saveFirebaseConfig()">Connect</button>
+  </div>
+  <div class="importStatus" id="firebaseSetupStatus"></div>
 </div>
 
 <section class="mapWrap">
@@ -597,6 +622,30 @@ onclick="setApiKey()"
 style="height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
 TMDB API Key
 </button>
+
+<div id="firebaseSection" style="display:none;">
+<div style="display:flex;gap:8px;">
+<button
+onclick="firebasePushBtn()"
+style="flex:1;height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+Push to Cloud
+</button>
+<button
+onclick="firebasePull()"
+style="flex:1;height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+Pull from Cloud
+</button>
+</div>
+<div id="firebaseStatus" style="font-size:12px;color:#888;text-align:center;margin-top:4px;"></div>
+</div>
+
+<div id="firebaseSetup" style="display:none;">
+<button
+onclick="openFirebaseSetup()"
+style="height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;width:100%;">
+Setup Cloud Sync (Firebase)
+</button>
+</div>
 
 <button
 onclick="clearAllMovies()"
@@ -1171,6 +1220,7 @@ init();
 function clearAllMovies(){
 if(!confirm('Delete all movies? This cannot be undone.'))return;
 localStorage.removeItem('movies');
+if(LogitSync.isConfigured())LogitSync.push([]);
 location.reload();
 }
 
@@ -1354,6 +1404,7 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
+if(LogitSync.isConfigured())LogitSync.push(movies);
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 setTimeout(function(){closeImportModal();location.reload();},1500);
@@ -1372,6 +1423,7 @@ movies.unshift(m);
 count++;
 });
 localStorage.setItem('movies',JSON.stringify(movies));
+if(LogitSync.isConfigured())LogitSync.push(movies);
 document.getElementById('importStatus').textContent=count+' imported from JSON';
 setTimeout(function(){closeImportModal();location.reload();},1500);
 return;
@@ -1463,6 +1515,7 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
+if(LogitSync.isConfigured())LogitSync.push(movies);
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 
@@ -1513,6 +1566,119 @@ document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
 URL.revokeObjectURL(url);
+}
+
+/* ========= FIREBASE SYNC ========= */
+
+var fbReady = false;
+
+(function initFirebase() {
+  if (!LogitSync.isConfigured()) {
+    var setupEl = document.getElementById('firebaseSetup');
+    if (setupEl) setupEl.style.display = 'block';
+    return;
+  }
+  LogitSync.init().then(function(ok) {
+    fbReady = ok;
+    updateSyncDot();
+    if (ok) {
+      var secEl = document.getElementById('firebaseSection');
+      if (secEl) secEl.style.display = 'block';
+    } else {
+      var setupEl = document.getElementById('firebaseSetup');
+      if (setupEl) setupEl.style.display = 'block';
+    }
+  });
+})();
+
+function updateSyncDot() {
+  var dot = document.getElementById('syncDot');
+  if (!dot) return;
+  dot.style.display = 'inline-block';
+  dot.style.background = fbReady ? '#4ecdc4' : '#e94560';
+  dot.title = fbReady ? 'Cloud sync connected' : 'Cloud sync error';
+}
+
+function openFirebaseSetup() {
+  document.getElementById('firebaseModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  var cfg = LogitSync.getConfig();
+  document.getElementById('firebaseConfigInput').value = cfg ? JSON.stringify(cfg, null, 2) : '';
+  document.getElementById('firebaseSetupStatus').textContent = '';
+}
+
+function closeFirebaseSetup() {
+  document.getElementById('firebaseModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function saveFirebaseConfig() {
+  var text = document.getElementById('firebaseConfigInput').value.trim();
+  if (!text) {
+    localStorage.removeItem('firebase_config');
+    LogitSync.clearConfig();
+    alert('Firebase config removed. Cloud sync disabled.');
+    location.reload();
+    return;
+  }
+  try {
+    var cfg = JSON.parse(text);
+    if (!cfg.apiKey || !cfg.databaseURL) {
+      document.getElementById('firebaseSetupStatus').textContent = 'Missing apiKey or databaseURL';
+      return;
+    }
+    LogitSync.saveConfig(cfg);
+    document.getElementById('firebaseSetupStatus').textContent = 'Saved! Connecting...';
+    LogitSync.init(cfg).then(function(ok) {
+      if (ok) {
+        document.getElementById('firebaseSetupStatus').textContent = 'Connected! Reloading...';
+        setTimeout(function() { location.reload(); }, 1000);
+      } else {
+        document.getElementById('firebaseSetupStatus').textContent = 'Auth failed. Check Anonymous auth is enabled.';
+      }
+    });
+  } catch(e) {
+    document.getElementById('firebaseSetupStatus').textContent = 'Invalid JSON';
+  }
+}
+
+function firebasePush() {
+  if (!fbReady) return;
+  LogitSync.push(movies);
+}
+
+function firebasePull() {
+  if (!fbReady) {
+    alert('Cloud sync not connected.');
+    return;
+  }
+  if (!confirm('Replace local movies with cloud data? Current local data will be overwritten.')) return;
+  var statusEl = document.getElementById('firebaseStatus');
+  if (statusEl) statusEl.textContent = 'Pulling...';
+  LogitSync.pull().then(function(remote) {
+    if (remote && remote.length > 0) {
+      movies = remote;
+      localStorage.setItem('movies', JSON.stringify(movies));
+      if (statusEl) statusEl.textContent = remote.length + ' movies pulled!';
+      firebasePush();
+      setTimeout(function() { location.reload(); }, 1000);
+    } else {
+      if (statusEl) statusEl.textContent = 'No cloud data found.';
+    }
+  });
+}
+
+function firebasePushBtn() {
+  if (!fbReady) {
+    alert('Cloud sync not connected.');
+    return;
+  }
+  var statusEl = document.getElementById('firebaseStatus');
+  if (statusEl) statusEl.textContent = 'Pushing...';
+  LogitSync.push(movies).then(function(ok) {
+    if (statusEl) statusEl.textContent = ok ? 'Pushed!' : 'Push failed.';
+    setTimeout(function() { if (statusEl) statusEl.textContent = ''; }, 2000);
+  });
 }
 
 </script>

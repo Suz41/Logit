@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.2.0** — Firebase cloud sync (optional); auto-push on add/edit/delete, manual push/pull, anonymous auth
 - **v1.1.0** — Removed Supabase; pure localStorage (no external dependencies)
 - **v1.0.9** — Fix movie disappearing on refresh (both pages)
 - **v1.0.7** — iOS-style toggle switches for rewatch (compact 38×22px, 9px label)
