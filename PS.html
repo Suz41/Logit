@@ -18,6 +18,8 @@ href="https://fonts.googleapis.com">
 href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
 rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 :root{
@@ -610,10 +612,24 @@ Clear All Movies
 
 /* ========= MOVIES ========= */
 
-const movies=
-JSON.parse(
-localStorage.getItem("movies")
-)||[];
+const sb = supabase.createClient('https://agtonyqfbscbwjgypynu.supabase.co', 'sb_publishable_HT7hUKUm-zkNTicrAasqzQ_FOXfl3Bi');
+
+let movies = JSON.parse(localStorage.getItem("movies")) || [];
+
+async function loadMovies() {
+  try {
+    const { data, error } = await sb.from('movies').select('*');
+    if (!error && data && data.length > 0) {
+      movies = data;
+      localStorage.setItem('movies', JSON.stringify(data));
+    } else if (movies.length > 0) {
+      await sb.from('movies').upsert(movies, { onConflict: 'id' });
+    }
+  } catch (e) { /* use cached */ }
+}
+
+async function init() {
+await loadMovies();
 
 /* ========= DATA ========= */
 
@@ -1157,10 +1173,15 @@ ${count}
 
 });
 
+} /* end init */
+
+init();
+
 /* ========= CLEAR ALL ========= */
 
 function clearAllMovies(){
 if(!confirm('Delete all movies? This cannot be undone.'))return;
+sb.from('movies').delete().neq('id','').then();
 localStorage.removeItem('movies');
 location.reload();
 }
@@ -1345,6 +1366,7 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
+if(imported>0){sb.from('movies').upsert(movies.slice(0,imported),{onConflict:'id'}).then();}
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 setTimeout(function(){closeImportModal();location.reload();},1500);
@@ -1363,6 +1385,7 @@ movies.unshift(m);
 count++;
 });
 localStorage.setItem('movies',JSON.stringify(movies));
+if(count>0){sb.from('movies').upsert(movies.slice(0,count),{onConflict:'id'}).then();}
 document.getElementById('importStatus').textContent=count+' imported from JSON';
 setTimeout(function(){closeImportModal();location.reload();},1500);
 return;
@@ -1454,6 +1477,7 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
+if(imported>0){sb.from('movies').upsert(movies.slice(0,imported),{onConflict:'id'}).then();}
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 

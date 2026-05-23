@@ -6,6 +6,7 @@
 <title>Log!t</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --grid: 3;
@@ -610,8 +611,10 @@ body::-webkit-scrollbar { display: none; }
     throw new Error('No API key');
   }
 
+  const sb = supabase.createClient('https://agtonyqfbscbwjgypynu.supabase.co', 'sb_publishable_HT7hUKUm-zkNTicrAasqzQ_FOXfl3Bi');
+
   const state = {
-    movies: JSON.parse(localStorage.getItem('movies')) || [],
+    movies: [],
     current: null,
     cache: {}
   };
@@ -645,6 +648,25 @@ body::-webkit-scrollbar { display: none; }
 
   function save() {
     localStorage.setItem('movies', JSON.stringify(state.movies));
+    sb.from('movies').upsert(state.movies, { onConflict: 'id' }).then();
+  }
+
+  async function loadMovies() {
+    var cached = localStorage.getItem('movies');
+    try {
+      var { data, error } = await sb.from('movies').select('*');
+      if (!error && data && data.length > 0) {
+        state.movies = data;
+        localStorage.setItem('movies', JSON.stringify(data));
+      } else if (cached) {
+        state.movies = JSON.parse(cached);
+        if (state.movies.length > 0) {
+          await sb.from('movies').upsert(state.movies, { onConflict: 'id' });
+        }
+      }
+    } catch (e) {
+      state.movies = cached ? JSON.parse(cached) : [];
+    }
   }
 
   async function tmdb(url) {
@@ -765,7 +787,7 @@ body::-webkit-scrollbar { display: none; }
     });
   }
 
-  renderMovies();
+  loadMovies().then(function() { renderMovies(); });
 
   // ========= ADD MODAL =========
 
@@ -1024,7 +1046,9 @@ body::-webkit-scrollbar { display: none; }
 
   $('deleteBtn').onclick = function() {
     if (!confirm('Delete "' + state.current.t + '" ?')) return;
-    state.movies = state.movies.filter(function(m) { return m.id !== state.current.id; });
+    var delId = state.current.id;
+    state.movies = state.movies.filter(function(m) { return m.id !== delId; });
+    sb.from('movies').delete().eq('id', delId).then();
     save();
     renderMovies();
     closeMeta();
@@ -1064,6 +1088,7 @@ body::-webkit-scrollbar { display: none; }
         var selected = state.current.p[Number(card.dataset.i)].u;
         state.current.sp = selected;
         save();
+        sb.from('movies').update({ sp: selected }).eq('id', state.current.id).then();
         renderMovies();
         $('mPoster').src = img(selected);
         picker.remove();
