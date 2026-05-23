@@ -136,6 +136,8 @@ body::-webkit-scrollbar { display: none; }
 .movieDate .day { font-weight: 700; color: #888; }
 .movieDate .rewatch { color: #e94560; font-weight: 700; }
 
+body.hide-dates .movieDate { display: none; }
+
 .empty {
   height: 70vh;
   display: flex;
@@ -506,6 +508,10 @@ body::-webkit-scrollbar { display: none; }
       3
       <span class="gridTooltip">Columns: 3</span>
     </button>
+    <button class="headBtn" id="dateBtn" title="Toggle dates">
+      <span class="dateBtnText">D</span>
+      <span class="gridTooltip">Hide dates</span>
+    </button>
     <button class="profileBtn" id="profileBtn">S</button>
   </div>
 </header>
@@ -697,6 +703,26 @@ body::-webkit-scrollbar { display: none; }
     var tip = gridBtn.querySelector('.gridTooltip');
     if (tip) tip.textContent = 'Columns: ' + gridCount;
   }
+
+  // ========= DATE TOGGLE =========
+
+  let showDates = localStorage.getItem('dates') !== '0';
+  const dateBtn = $('dateBtn');
+
+  function updateDateBtn() {
+    document.body.classList.toggle('hide-dates', !showDates);
+    var tip = dateBtn.querySelector('.gridTooltip');
+    if (tip) tip.textContent = showDates ? 'Hide dates' : 'Show dates';
+    dateBtn.querySelector('.dateBtnText').style.opacity = showDates ? '1' : '0.4';
+  }
+
+  updateDateBtn();
+
+  dateBtn.onclick = function() {
+    showDates = !showDates;
+    localStorage.setItem('dates', showDates ? '1' : '0');
+    updateDateBtn();
+  };
 
   // ========= PROFILE =========
 
