@@ -299,6 +299,29 @@ font-size:10px;
 font-weight:600;
 color:#ddd;
 white-space:nowrap;
+cursor:pointer;
+flex-direction:column;
+height:auto;
+align-items:stretch;
+}
+
+.metaItemHead{
+display:flex;
+align-items:center;
+gap:6px;
+white-space:nowrap;
+height:24px;
+}
+
+.metaMovies{
+display:none;
+flex-wrap:wrap;
+gap:4px;
+padding:4px 0 6px 0;
+}
+
+.metaItem.active .metaMovies{
+display:flex;
 }
 
 .metaCount{
@@ -397,22 +420,6 @@ onclick="history.back()">
 Stats
 </div>
 
-<div style="display:flex;gap:6px;align-items:center;">
-<button
-class="headBtn"
-onclick="exportMovies()"
-title="Export Movies"
-style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
-Export
-</button>
-<button
-class="headBtn"
-onclick="openImportModal()"
-title="Import Movies"
-style="font-size:11px;width:auto;padding:0 10px;border-radius:14px;">
-Import
-</button>
-</div>
 
 </header>
 
@@ -583,24 +590,37 @@ id="regionWrap">
 
 </section>
 
-<div style="padding:10px;display:flex;flex-direction:column;gap:8px;margin-bottom:30px;">
+<div style="padding:10px;display:flex;flex-direction:column;gap:6px;margin-bottom:30px;">
+
+<div style="display:flex;gap:6px;">
+<button
+onclick="exportMovies()"
+style="flex:1;height:36px;border:none;border-radius:10px;background:var(--surface-light);color:var(--text-main);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+Export
+</button>
+<button
+onclick="openImportModal()"
+style="flex:1;height:36px;border:none;border-radius:10px;background:var(--surface-light);color:var(--text-main);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+Import
+</button>
+</div>
 
 <button
 onclick="window.location.href='about.html'"
-style="height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+style="height:36px;border:none;border-radius:10px;background:var(--surface);color:var(--text-main);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
 About
 </button>
 
 <button
 onclick="setApiKey()"
-style="height:44px;border:none;border-radius:12px;background:var(--surface);color:var(--text-main);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+style="height:36px;border:none;border-radius:10px;background:var(--surface);color:var(--text-main);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
 TMDB API Key
 </button>
 
 
 <button
 onclick="clearAllMovies()"
-style="height:44px;border:none;border-radius:12px;background:#e94560;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
+style="height:36px;border:none;border-radius:10px;background:#e94560;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
 Clear All Movies
 </button>
 
@@ -622,12 +642,18 @@ loadMovies();
 
 /* ========= DATA ========= */
 
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 const countryCount={};
 const directorCount={};
 const actorCount={};
 
 const genreCount={};
+const genreMovies={};
 const langCount={};
+const langMovies={};
+const regionCount={};
+const regionMovies={};
 
 /* ========= LOOP ========= */
 
@@ -647,6 +673,8 @@ country="United States";
 
 countryCount[country]=
 (countryCount[country]||0)+1;
+if(!regionMovies[country])regionMovies[country]=[];
+regionMovies[country].push(movie.t);
 
 }
 
@@ -664,6 +692,8 @@ if(!genre)return;
 
 genreCount[genre]=
 (genreCount[genre]||0)+1;
+if(!genreMovies[genre])genreMovies[genre]=[];
+genreMovies[genre].push(movie.t);
 
 });
 
@@ -683,6 +713,8 @@ if(!lang)return;
 
 langCount[lang]=
 (langCount[lang]||0)+1;
+if(!langMovies[lang])langMovies[lang]=[];
+langMovies[lang].push(movie.t);
 
 });
 
@@ -1066,6 +1098,10 @@ person.classList.toggle(
 }
 );
 
+/* ========= LANGUAGE MAP ========= */
+
+const langMap={aa:'Afar',ab:'Abkhaz',af:'Afrikaans',ak:'Akan',am:'Amharic',ar:'Arabic',an:'Aragonese',as:'Assamese',av:'Avaric',ay:'Aymara',az:'Azerbaijani',ba:'Bashkir',be:'Belarusian',bg:'Bulgarian',bh:'Bihari',bi:'Bislama',bm:'Bambara',bn:'Bengali',bo:'Tibetan',br:'Breton',bs:'Bosnian',ca:'Catalan',ce:'Chechen',ch:'Chamorro',co:'Corsican',cr:'Cree',cs:'Czech',cv:'Chuvash',cy:'Welsh',da:'Danish',de:'German',dv:'Divehi',dz:'Dzongkha',ee:'Ewe',el:'Greek',en:'English',eo:'Esperanto',es:'Spanish',et:'Estonian',eu:'Basque',fa:'Persian',ff:'Fula',fi:'Finnish',fj:'Fijian',fo:'Faroese',fr:'French',fy:'Western Frisian',ga:'Irish',gd:'Scottish Gaelic',gl:'Galician',gn:'Guarani',gu:'Gujarati',gv:'Manx',ha:'Hausa',he:'Hebrew',hi:'Hindi',ho:'Hiri Motu',hr:'Croatian',ht:'Haitian',hu:'Hungarian',hy:'Armenian',hz:'Herero',ia:'Interlingua',id:'Indonesian',ie:'Interlingue',ig:'Igbo',ii:'Sichuan Yi',ik:'Inupiauk',io:'Ido',is:'Icelandic',it:'Italian',iu:'Inuktitut',ja:'Japanese',jv:'Javanese',ka:'Georgian',kg:'Kongo',ki:'Kikuyu',kj:'Kwanyama',kk:'Kazakh',kl:'Kalaallisut',km:'Khmer',kn:'Kannada',ko:'Korean',kr:'Kanuri',ks:'Kashmiri',ku:'Kurdish',kv:'Komi',kw:'Cornish',ky:'Kyrgyz',la:'Latin',lb:'Luxembourgish',lg:'Ganda',li:'Limburgish',ln:'Lingala',lo:'Lao',lt:'Lithuanian',lu:'Luba-Katanga',lv:'Latvian',mg:'Malagasy',mh:'Marshallese',mi:'Maori',mk:'Macedonian',ml:'Malayalam',mn:'Mongolian',mr:'Marathi',ms:'Malay',mt:'Maltese',my:'Burmese',na:'Nauru',nb:'Norwegian Bokmål',nd:'North Ndebele',ne:'Nepali',ng:'Ndonga',nl:'Dutch',nn:'Norwegian Nynorsk',no:'Norwegian',nr:'South Ndebele',nv:'Navajo',ny:'Chichewa',oc:'Occitan',oj:'Ojibwe',om:'Oromo',or:'Oriya',os:'Ossetian',pa:'Panjabi',pi:'Pali',pl:'Polish',ps:'Pashto',pt:'Portuguese',qu:'Quechua',rm:'Romansh',rn:'Kirundi',ro:'Romanian',ru:'Russian',rw:'Kinyarwanda',sa:'Sanskrit',sc:'Sardinian',sd:'Sindhi',se:'Northern Sami',sg:'Sango',si:'Sinhala',sk:'Slovak',sl:'Slovenian',sm:'Samoan',sn:'Shona',so:'Somali',sq:'Albanian',sr:'Serbian',ss:'Swati',st:'Southern Sotho',su:'Sundanese',sv:'Swedish',sw:'Swamil',ta:'Tamil',te:'Telugu',tg:'Tajik',th:'Thai',ti:'Tigrinya',tk:'Turkmen',tl:'Tagalog',tn:'Tswana',to:'Tonga',tr:'Turkish',ts:'Tsonga',tt:'Tatar',tw:'Twi',ty:'Tahitian',ug:'Uyghur',uk:'Ukrainian',ur:'Urdu',uz:'Uzbek',ve:'Venda',vi:'Vietnamese',vo:'Volapük',wa:'Walloon',wo:'Wolof',xh:'Xhosa',yi:'Yiddish',yo:'Yoruba',za:'Zhuang',zh:'Chinese',zu:'Zulu',xx:'No Language','n/a':'Unknown'};
+
 /* ========= GENRES ========= */
 
 const genreWrap=
@@ -1082,15 +1118,25 @@ Object.entries(genreCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([genre,count])=>{
 
+var moviesHtml=(genreMovies[genre]||[]).map(function(m){return '<div class="movieChip">'+esc(m)+'</div>';}).join('');
+
 genreWrap.innerHTML+=`
 
-<div class="metaItem">
+<div class="metaItem" onclick="this.classList.toggle('active')">
+
+<div class="metaItemHead">
 
 ${genre}
 
 <span class="metaCount">
 ${count}
 </span>
+
+</div>
+
+<div class="metaMovies">
+${moviesHtml}
+</div>
 
 </div>
 
@@ -1114,15 +1160,26 @@ Object.entries(langCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([lang,count])=>{
 
+var fullName=langMap[lang.toLowerCase()]||lang.toUpperCase();
+var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<div class="movieChip">'+esc(m)+'</div>';}).join('');
+
 langWrap.innerHTML+=`
 
-<div class="metaItem">
+<div class="metaItem" onclick="this.classList.toggle('active')">
 
-${lang.toUpperCase()}
+<div class="metaItemHead">
+
+${fullName}
 
 <span class="metaCount">
 ${count}
 </span>
+
+</div>
+
+<div class="metaMovies">
+${moviesHtml}
+</div>
 
 </div>
 
@@ -1146,15 +1203,25 @@ Object.entries(countryCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([country,count])=>{
 
+var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<div class="movieChip">'+esc(m)+'</div>';}).join('');
+
 regionWrap.innerHTML+=`
 
-<div class="metaItem">
+<div class="metaItem" onclick="this.classList.toggle('active')">
+
+<div class="metaItemHead">
 
 ${country}
 
 <span class="metaCount">
 ${count}
 </span>
+
+</div>
+
+<div class="metaMovies">
+${moviesHtml}
+</div>
 
 </div>
 
@@ -1521,14 +1588,14 @@ function doExport(format){
   var data, blob, ext, mime;
   if(format === 'json'){
     var slim = movies.map(function(m){
-      return{ id:m.id, t:m.t, tmdb_id:m.tmdb_id||'', yr:m.yr, r:m.r, d:m.d, w:m.w, sp:m.sp };
+      return{ id:m.id, t:m.t, tmdb_id:m.tmdb_id||'', imdb_id:m.imdb_id||'', yr:m.yr, r:m.r, d:m.d, w:m.w, sp:m.sp };
     });
     data = JSON.stringify(slim, null, 2);
     mime = 'application/json';
     ext = 'json';
   } else {
     var lines = movies.map(function(m){
-      return m.t + ' | ' + (m.r||'') + '/5 | ' + (m.d||'') + ' | ' + (m.w||'') + ' | ' + (m.yr||'') + ' | ' + (m.tmdb_id||'');
+      return m.t + ' | ' + (m.r||'') + '/5 | ' + (m.d||'') + ' | ' + (m.w||'') + ' | ' + (m.yr||'') + ' | ' + (m.tmdb_id||'') + ' | ' + (m.imdb_id||'');
     });
     data = lines.join('\n');
     mime = 'text/plain';
