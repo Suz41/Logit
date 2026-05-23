@@ -108,8 +108,8 @@ body::-webkit-scrollbar { display: none; }
 .monthArrow { font-size: 10px; color: #666; transition: transform 0.2s; }
 .monthSection.active .monthArrow { transform: rotate(90deg); }
 
-.monthHead h2 { font-size: 14px; font-weight: 600; letter-spacing: -.2px; text-transform: uppercase; color: #eee; }
-.monthHead span { font-size: 10px; color: #666; font-weight: 600; }
+.monthHead h2 { font-size: 11px; font-weight: 600; letter-spacing: 0; text-transform: uppercase; color: #666; }
+.monthHead span { font-size: 9px; color: #444; font-weight: 600; }
 
 .moviesGrid { display: grid; grid-template-columns: repeat(var(--grid), 1fr); gap: 4px; padding-top: 6px; }
 
@@ -120,12 +120,15 @@ body::-webkit-scrollbar { display: none; }
   height: 16px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
   font-size: 9px;
-  font-weight: 600;
-  color: #7d7d7d;
+  font-weight: 500;
+  color: #555;
   margin-top: 3px;
+  padding: 0 1px;
 }
+
+.movieDate .day { font-weight: 700; color: #888; }
 
 .empty {
   height: 70vh;
@@ -714,7 +717,7 @@ body::-webkit-scrollbar { display: none; }
         var month = date.toLocaleString('default', { month: 'short' });
         moviesHtml += '<div class="movie" data-id="' + esc(movie.id) + '">'
           + '<img src="' + img(movie.sp) + '" loading="lazy">'
-          + '<div class="movieDate">' + day + ' ' + month + '</div>'
+          + '<div class="movieDate"><span class="day">' + day + '</span> ' + month + '</div>'
           + '</div>';
       });
 
