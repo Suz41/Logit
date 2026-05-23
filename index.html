@@ -36,7 +36,6 @@ body::-webkit-scrollbar { display: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #1c1c1c;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -45,9 +44,8 @@ body::-webkit-scrollbar { display: none; }
 
 .logo { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
 
-.headerRight { display: flex; align-items: center; gap: 6px; }
 
-.headBtn, .profileBtn {
+.headBtn {
   width: 32px;
   height: 32px;
   border: none;
@@ -57,32 +55,50 @@ body::-webkit-scrollbar { display: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  position: relative;
 }
 
-.profileBtn { background: #fff; color: #000; }
+/* ========= BOTTOM NAV ========= */
 
-.gridTooltip {
-  position: absolute;
-  bottom: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  color: #fff;
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #0a0a0a;
+  border-top: 1px solid #1c1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.navItem {
+  border: none;
+  background: none;
+  color: #555;
   font-size: 9px;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.15s;
 }
 
-.headBtn:hover .gridTooltip, .headBtn:active .gridTooltip { opacity: 1; }
+.navItem .navIcon { font-size: 18px; line-height: 1; }
+
+.navItem.on { color: #fff; }
+
+body { padding-bottom: 60px; }
 
 
 /* ========= LIBRARY ========= */
@@ -502,21 +518,29 @@ body.hide-dates .movieDate { display: none; }
 
 <header class="header">
   <div class="logo">Log!t</div>
-  <div class="headerRight">
-    <button class="headBtn" id="openBtn">+</button>
-    <button class="headBtn" id="gridBtn">
-      3
-      <span class="gridTooltip">Columns: 3</span>
-    </button>
-    <button class="headBtn" id="dateBtn" title="Toggle dates">
-      <span class="dateBtnText">D</span>
-      <span class="gridTooltip">Hide dates</span>
-    </button>
-    <button class="profileBtn" id="profileBtn">S</button>
-  </div>
+  <button class="headBtn" id="openBtn">+</button>
 </header>
 
 <section class="library" id="library"></section>
+
+<nav class="bottomNav">
+  <button class="navItem on" id="navLibrary">
+    <span class="navIcon">&#9776;</span>
+    Library
+  </button>
+  <button class="navItem" id="navDates">
+    <span class="navIcon">&#128197;</span>
+    Dates
+  </button>
+  <button class="navItem" id="navGrid">
+    <span class="navIcon">&#9638;</span>
+    Grid
+  </button>
+  <button class="navItem" id="navStats">
+    <span class="navIcon">&#9733;</span>
+    Stats
+  </button>
+</nav>
 
 <!-- ========= ADD ========= -->
 <div class="modal" id="modal">
@@ -636,7 +660,6 @@ body.hide-dates .movieDate { display: none; }
   const queryInput = $('query');
   const yearInput = $('year');
   const watchDate = $('watchDate');
-  const gridBtn = $('gridBtn');
   const sheetAddBtn = () => document.querySelector('.sheetAdd');
 
   watchDate.valueAsDate = new Date();
@@ -690,43 +713,39 @@ body.hide-dates .movieDate { display: none; }
   let gridCount = Number(localStorage.getItem('grid')) || 3;
   updateGrid();
 
-  gridBtn.onclick = function() {
+  function updateGrid() {
+    document.documentElement.style.setProperty('--grid', gridCount);
+    var navGrid = $('navGrid');
+    navGrid.querySelector('.navIcon').textContent = gridCount;
+    navGrid.classList.toggle('on', false);
+  }
+
+  $('navGrid').onclick = function() {
     gridCount++;
     if (gridCount > 10) gridCount = 3;
     localStorage.setItem('grid', gridCount);
     updateGrid();
   };
 
-  function updateGrid() {
-    document.documentElement.style.setProperty('--grid', gridCount);
-    gridBtn.childNodes[0].textContent = gridCount + ' ';
-    var tip = gridBtn.querySelector('.gridTooltip');
-    if (tip) tip.textContent = 'Columns: ' + gridCount;
-  }
-
   // ========= DATE TOGGLE =========
 
   let showDates = localStorage.getItem('dates') !== '0';
-  const dateBtn = $('dateBtn');
+  updateDateBtn();
 
   function updateDateBtn() {
     document.body.classList.toggle('hide-dates', !showDates);
-    var tip = dateBtn.querySelector('.gridTooltip');
-    if (tip) tip.textContent = showDates ? 'Hide dates' : 'Show dates';
-    dateBtn.querySelector('.dateBtnText').style.opacity = showDates ? '1' : '0.4';
+    $('navDates').classList.toggle('on', showDates);
   }
 
-  updateDateBtn();
-
-  dateBtn.onclick = function() {
+  $('navDates').onclick = function() {
     showDates = !showDates;
     localStorage.setItem('dates', showDates ? '1' : '0');
     updateDateBtn();
   };
 
-  // ========= PROFILE =========
+  // ========= STATS =========
 
-  $('profileBtn').onclick = function() {
+  $('navStats').onclick = function() {
     window.location.href = 'PS.html';
   };
 
