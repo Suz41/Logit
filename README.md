@@ -1,13 +1,13 @@
 # Log!t
 
-Personal movie logger. Search via TMDB, rate, and track — synced to cloud via Supabase with localStorage fallback.
+Personal movie logger. Search via TMDB, rate, and track — stored locally in your browser.
 
 https://suz41.github.io/Logit
 
 ## Updates
 
-- **v1.0.9** — Fix movie disappearing on refresh: merge localStorage and Supabase data (both pages)
-- **v1.0.8** — Supabase cloud sync (movies persist to cloud with localStorage fallback)
+- **v1.1.0** — Removed Supabase; pure localStorage (no external dependencies)
+- **v1.0.9** — Fix movie disappearing on refresh (both pages)
 - **v1.0.7** — iOS-style toggle switches for rewatch (compact 38×22px, 9px label)
 - **v1.0.6** — Rewatch checkbox in meta edit; rewatch badge on movie cards
 - **v1.0.5** — Slim export; import (JSON file, paste text, IMDB/TMDB IDs, freeform); rewatch toggle on add; poster re-fetch on import
