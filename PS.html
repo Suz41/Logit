@@ -18,8 +18,6 @@ href="https://fonts.googleapis.com">
 href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
 rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 
 :root{
@@ -612,35 +610,15 @@ Clear All Movies
 
 /* ========= MOVIES ========= */
 
-const sb = supabase.createClient('https://etacwddwgilrwihrqufn.supabase.co', 'sb_publishable_ArhovyhhkEo0jqEa3ze27g_kwex45n3');
-
 let movies = JSON.parse(localStorage.getItem("movies")) || [];
 
-async function loadMovies() {
+function loadMovies() {
   var cached = localStorage.getItem('movies');
-  var localMovies = cached ? JSON.parse(cached) : [];
-
-  try {
-    var { data, error } = await sb.from('movies').select('*');
-    var remoteMovies = (!error && data) ? data : [];
-
-    // Merge: local wins on conflicts
-    var map = {};
-    remoteMovies.forEach(function(m) { map[m.id] = m; });
-    localMovies.forEach(function(m) { map[m.id] = m; });
-    movies = Object.values(map);
-  } catch (e) {
-    movies = localMovies;
-  }
-
-  localStorage.setItem('movies', JSON.stringify(movies));
-  if (movies.length > 0) {
-    sb.from('movies').upsert(movies, { onConflict: 'id' }).then();
-  }
+  movies = cached ? JSON.parse(cached) : [];
 }
 
-async function init() {
-await loadMovies();
+function init() {
+loadMovies();
 
 /* ========= DATA ========= */
 
@@ -1192,7 +1170,6 @@ init();
 
 function clearAllMovies(){
 if(!confirm('Delete all movies? This cannot be undone.'))return;
-sb.from('movies').delete().neq('id','').then();
 localStorage.removeItem('movies');
 location.reload();
 }
@@ -1377,7 +1354,6 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
-if(imported>0){sb.from('movies').upsert(movies.slice(0,imported),{onConflict:'id'}).then();}
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 setTimeout(function(){closeImportModal();location.reload();},1500);
@@ -1396,7 +1372,6 @@ movies.unshift(m);
 count++;
 });
 localStorage.setItem('movies',JSON.stringify(movies));
-if(count>0){sb.from('movies').upsert(movies.slice(0,count),{onConflict:'id'}).then();}
 document.getElementById('importStatus').textContent=count+' imported from JSON';
 setTimeout(function(){closeImportModal();location.reload();},1500);
 return;
@@ -1488,7 +1463,6 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
-if(imported>0){sb.from('movies').upsert(movies.slice(0,imported),{onConflict:'id'}).then();}
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 

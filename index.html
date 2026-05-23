@@ -6,7 +6,6 @@
 <title>Log!t</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --grid: 3;
@@ -611,8 +610,6 @@ body::-webkit-scrollbar { display: none; }
     throw new Error('No API key');
   }
 
-  const sb = supabase.createClient('https://etacwddwgilrwihrqufn.supabase.co', 'sb_publishable_ArhovyhhkEo0jqEa3ze27g_kwex45n3');
-
   const state = {
     movies: [],
     current: null,
@@ -648,30 +645,11 @@ body::-webkit-scrollbar { display: none; }
 
   function save() {
     localStorage.setItem('movies', JSON.stringify(state.movies));
-    sb.from('movies').upsert(state.movies, { onConflict: 'id' }).then();
   }
 
-  async function loadMovies() {
+  function loadMovies() {
     var cached = localStorage.getItem('movies');
-    var localMovies = cached ? JSON.parse(cached) : [];
-
-    try {
-      var { data, error } = await sb.from('movies').select('*');
-      var remoteMovies = (!error && data) ? data : [];
-
-      // Merge: local wins on conflicts (always most recent from save())
-      var map = {};
-      remoteMovies.forEach(function(m) { map[m.id] = m; });
-      localMovies.forEach(function(m) { map[m.id] = m; });
-      state.movies = Object.values(map);
-    } catch (e) {
-      state.movies = localMovies;
-    }
-
-    localStorage.setItem('movies', JSON.stringify(state.movies));
-    if (state.movies.length > 0) {
-      sb.from('movies').upsert(state.movies, { onConflict: 'id' }).then();
-    }
+    state.movies = cached ? JSON.parse(cached) : [];
   }
 
   async function tmdb(url) {
@@ -792,7 +770,8 @@ body::-webkit-scrollbar { display: none; }
     });
   }
 
-  loadMovies().then(function() { renderMovies(); });
+  loadMovies();
+  renderMovies();
 
   // ========= ADD MODAL =========
 
@@ -1053,7 +1032,6 @@ body::-webkit-scrollbar { display: none; }
     if (!confirm('Delete "' + state.current.t + '" ?')) return;
     var delId = state.current.id;
     state.movies = state.movies.filter(function(m) { return m.id !== delId; });
-    sb.from('movies').delete().eq('id', delId).then();
     save();
     renderMovies();
     closeMeta();
@@ -1093,7 +1071,6 @@ body::-webkit-scrollbar { display: none; }
         var selected = state.current.p[Number(card.dataset.i)].u;
         state.current.sp = selected;
         save();
-        sb.from('movies').update({ sp: selected }).eq('id', state.current.id).then();
         renderMovies();
         $('mPoster').src = img(selected);
         picker.remove();
