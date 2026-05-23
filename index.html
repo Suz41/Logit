@@ -84,36 +84,6 @@ body::-webkit-scrollbar { display: none; }
 
 .headBtn:hover .gridTooltip, .headBtn:active .gridTooltip { opacity: 1; }
 
-.monthBar {
-  position: sticky;
-  top: 50px;
-  z-index: 90;
-  background: var(--bg);
-  display: flex;
-  gap: 6px;
-  padding: 6px 10px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.monthBar::-webkit-scrollbar { display: none; }
-
-.monthPill {
-  flex-shrink: 0;
-  height: 26px;
-  padding: 0 10px;
-  border: none;
-  border-radius: 999px;
-  background: var(--surface2);
-  color: #555;
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
-}
-.monthPill.active { background: #fff; color: #000; }
 
 /* ========= LIBRARY ========= */
 
@@ -526,7 +496,6 @@ body::-webkit-scrollbar { display: none; }
   </div>
 </header>
 
-<div class="monthBar" id="monthBar"></div>
 <section class="library" id="library"></section>
 
 <!-- ========= ADD ========= -->
@@ -638,7 +607,6 @@ body::-webkit-scrollbar { display: none; }
   // DOM refs
   const $ = id => document.getElementById(id);
   const library = $('library');
-  const monthBar = $('monthBar');
   const modal = $('modal');
   const results = $('results');
   const metaModal = $('metaModal');
@@ -718,15 +686,11 @@ body::-webkit-scrollbar { display: none; }
 
   function renderMovies() {
     library.innerHTML = '';
-    monthBar.innerHTML = '';
 
     if (state.movies.length === 0) {
       library.innerHTML = '<div class="empty">No movies logged yet<div class="emptyHint">Tap + to add your first movie</div></div>';
-      monthBar.style.display = 'none';
       return;
     }
-
-    monthBar.style.display = '';
 
     var sorted = state.movies.slice().sort(function(a, b) {
       return new Date(b.d) - new Date(a.d);
@@ -739,7 +703,6 @@ body::-webkit-scrollbar { display: none; }
       if (!grouped[monthKey]) {
         grouped[monthKey] = {
           label: date.toLocaleString('default', { month: 'long', year: 'numeric' }),
-          short: date.toLocaleString('default', { month: 'short' }),
           movies: []
         };
       }
@@ -750,27 +713,10 @@ body::-webkit-scrollbar { display: none; }
       return new Date(b) - new Date(a);
     });
 
-    // Build month pills
-    keys.forEach(function(key, index) {
-      var pill = document.createElement('button');
-      pill.className = 'monthPill' + (index === 0 ? ' active' : '');
-      pill.textContent = grouped[key].short;
-      pill.dataset.key = key;
-      pill.onclick = function() {
-        var target = library.querySelector('.monthSection[data-key="' + key + '"]');
-        if (target) {
-          if (!target.classList.contains('active')) target.classList.add('active');
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      };
-      monthBar.append(pill);
-    });
-
     keys.forEach(function(key, index) {
       var group = grouped[key];
       var section = document.createElement('div');
       section.className = 'monthSection' + (index === 0 ? ' active' : '');
-      section.dataset.key = key;
 
       var moviesHtml = '';
       group.movies.forEach(function(movie) {
@@ -791,7 +737,6 @@ body::-webkit-scrollbar { display: none; }
         + '<span>' + group.movies.length + '</span></div>'
         + '<div class="monthMovies"><div class="moviesGrid">' + moviesHtml + '</div></div>';
 
-      // Bind movie clicks
       section.querySelectorAll('.movie').forEach(function(card) {
         card.onclick = function() {
           var movie = state.movies.find(function(m) { return m.id === card.dataset.id; });
@@ -799,35 +744,12 @@ body::-webkit-scrollbar { display: none; }
         };
       });
 
-      // Toggle section
       section.querySelector('.monthHead').onclick = function(e) {
         if (e.target.closest('.movie')) return;
         section.classList.toggle('active');
       };
 
       library.append(section);
-    });
-
-    // Scroll spy
-    var scrollTimeout;
-    window.addEventListener('scroll', function() {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(function() {
-        var sections = library.querySelectorAll('.monthSection');
-        var current = '';
-        var offset = monthBar.offsetTop + monthBar.offsetHeight + 10;
-        sections.forEach(function(s) {
-          if (s.getBoundingClientRect().top <= offset) current = s.dataset.key;
-        });
-        if (current) {
-          monthBar.querySelectorAll('.monthPill').forEach(function(p) {
-            p.classList.toggle('active', p.dataset.key === current);
-          });
-          // scroll pill into view
-          var active = monthBar.querySelector('.monthPill.active');
-          if (active) active.scrollIntoView({ inline: 'center', block: 'nearest' });
-        }
-      }, 50);
     });
   }
 
