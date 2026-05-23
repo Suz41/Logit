@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.1.1** — Month sections no longer auto-open on page load
 - **v1.1.0** — Removed Supabase & Firebase; pure localStorage (no external dependencies)
 - **v1.0.9** — Fix movie disappearing on refresh (both pages)
 - **v1.0.7** — iOS-style toggle switches for rewatch (compact 38×22px, 9px label)
