@@ -1494,29 +1494,56 @@ location.reload();
 
 /* ========= EXPORT ========= */
 
+var exportModal = document.createElement('div');
+exportModal.className = 'importModal';
+exportModal.id = 'exportModal';
+exportModal.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'
+  + '<h3 style="font-size:16px;font-weight:700;">Export Movies</h3>'
+  + '<button class="headBtn" onclick="closeExportModal()" style="width:34px;height:34px;">&times;</button>'
+  + '</div>'
+  + '<div style="display:flex;flex-direction:column;gap:8px;margin-top:20px;">'
+  + '<button onclick="doExport(\'json\')" style="height:48px;border:none;border-radius:12px;background:var(--surface-light);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">JSON</button>'
+  + '<button onclick="doExport(\'txt\')" style="height:48px;border:none;border-radius:12px;background:var(--surface-light);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">TXT</button>'
+  + '</div>';
+document.body.appendChild(exportModal);
+
 function exportMovies(){
-var slim=movies.map(function(m){
-return{
-id:m.id,
-t:m.t,
-tmdb_id:m.tmdb_id||'',
-yr:m.yr,
-r:m.r,
-d:m.d,
-w:m.w,
-sp:m.sp
-};
-});
-var data=JSON.stringify(slim,null,2);
-var blob=new Blob([data],{type:'application/json'});
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');
-a.href=url;
-a.download='logit-movies-'+new Date().toISOString().slice(0,10)+'.json';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+  document.getElementById('exportModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeExportModal(){
+  document.getElementById('exportModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function doExport(format){
+  var data, blob, ext, mime;
+  if(format === 'json'){
+    var slim = movies.map(function(m){
+      return{ id:m.id, t:m.t, tmdb_id:m.tmdb_id||'', yr:m.yr, r:m.r, d:m.d, w:m.w, sp:m.sp };
+    });
+    data = JSON.stringify(slim, null, 2);
+    mime = 'application/json';
+    ext = 'json';
+  } else {
+    var lines = movies.map(function(m){
+      return m.t + ' | ' + (m.r||'') + '/5 | ' + (m.d||'') + ' | ' + (m.w||'') + ' | ' + (m.yr||'') + ' | ' + (m.g||'');
+    });
+    data = lines.join('\n');
+    mime = 'text/plain';
+    ext = 'txt';
+  }
+  var blob = new Blob([data], {type: mime});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'logit-movies-' + new Date().toISOString().slice(0, 10) + '.' + ext;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  closeExportModal();
 }
 
 </script>
