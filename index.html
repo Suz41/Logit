@@ -611,7 +611,7 @@ body::-webkit-scrollbar { display: none; }
     throw new Error('No API key');
   }
 
-  const sb = supabase.createClient('https://agtonyqfbscbwjgypynu.supabase.co', 'sb_publishable_HT7hUKUm-zkNTicrAasqzQ_FOXfl3Bi');
+  const sb = supabase.createClient('https://etacwddwgilrwihrqufn.supabase.co', 'sb_publishable_ArhovyhhkEo0jqEa3ze27g_kwex45n3');
 
   const state = {
     movies: [],
@@ -653,19 +653,24 @@ body::-webkit-scrollbar { display: none; }
 
   async function loadMovies() {
     var cached = localStorage.getItem('movies');
+    var localMovies = cached ? JSON.parse(cached) : [];
+
     try {
       var { data, error } = await sb.from('movies').select('*');
-      if (!error && data && data.length > 0) {
-        state.movies = data;
-        localStorage.setItem('movies', JSON.stringify(data));
-      } else if (cached) {
-        state.movies = JSON.parse(cached);
-        if (state.movies.length > 0) {
-          await sb.from('movies').upsert(state.movies, { onConflict: 'id' });
-        }
-      }
+      var remoteMovies = (!error && data) ? data : [];
+
+      // Merge: local wins on conflicts (always most recent from save())
+      var map = {};
+      remoteMovies.forEach(function(m) { map[m.id] = m; });
+      localMovies.forEach(function(m) { map[m.id] = m; });
+      state.movies = Object.values(map);
     } catch (e) {
-      state.movies = cached ? JSON.parse(cached) : [];
+      state.movies = localMovies;
+    }
+
+    localStorage.setItem('movies', JSON.stringify(state.movies));
+    if (state.movies.length > 0) {
+      sb.from('movies').upsert(state.movies, { onConflict: 'id' }).then();
     }
   }
 
