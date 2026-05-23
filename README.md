@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.0.9** — Fix movie disappearing on refresh: merge localStorage and Supabase data
 - **v1.0.8** — Supabase cloud sync (movies persist to cloud with localStorage fallback)
 - **v1.0.7** — iOS-style toggle switches for rewatch (compact 38×22px, 9px label)
 - **v1.0.6** — Rewatch checkbox in meta edit; rewatch badge on movie cards
