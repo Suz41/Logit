@@ -612,20 +612,31 @@ Clear All Movies
 
 /* ========= MOVIES ========= */
 
-const sb = supabase.createClient('https://agtonyqfbscbwjgypynu.supabase.co', 'sb_publishable_HT7hUKUm-zkNTicrAasqzQ_FOXfl3Bi');
+const sb = supabase.createClient('https://etacwddwgilrwihrqufn.supabase.co', 'sb_publishable_ArhovyhhkEo0jqEa3ze27g_kwex45n3');
 
 let movies = JSON.parse(localStorage.getItem("movies")) || [];
 
 async function loadMovies() {
+  var cached = localStorage.getItem('movies');
+  var localMovies = cached ? JSON.parse(cached) : [];
+
   try {
-    const { data, error } = await sb.from('movies').select('*');
-    if (!error && data && data.length > 0) {
-      movies = data;
-      localStorage.setItem('movies', JSON.stringify(data));
-    } else if (movies.length > 0) {
-      await sb.from('movies').upsert(movies, { onConflict: 'id' });
-    }
-  } catch (e) { /* use cached */ }
+    var { data, error } = await sb.from('movies').select('*');
+    var remoteMovies = (!error && data) ? data : [];
+
+    // Merge: local wins on conflicts
+    var map = {};
+    remoteMovies.forEach(function(m) { map[m.id] = m; });
+    localMovies.forEach(function(m) { map[m.id] = m; });
+    movies = Object.values(map);
+  } catch (e) {
+    movies = localMovies;
+  }
+
+  localStorage.setItem('movies', JSON.stringify(movies));
+  if (movies.length > 0) {
+    sb.from('movies').upsert(movies, { onConflict: 'id' }).then();
+  }
 }
 
 async function init() {
