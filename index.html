@@ -831,7 +831,7 @@ body::-webkit-scrollbar { display: none; }
     showLoading(results);
 
     // Detect IMDB link or ID (e.g. tt0133093 or https://www.imdb.com/title/tt0133093/)
-    var imdbMatch = q.match(/\b(tt\d{7,8})\b/i);
+    var imdbMatch = q.match(/(tt\d{7,})/i);
     if (imdbMatch) {
       var findData = await tmdb('https://api.themoviedb.org/3/find/' + imdbMatch[1] + '?api_key=' + API + '&external_source=imdb_id');
       if (findData && findData.movie_results && findData.movie_results.length > 0) {

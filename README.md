@@ -6,7 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
-- **v1.1.5** — Clean stats: removed pill badges; removed genre expand; centered stats header
+- **v1.1.5** — Fix IMDB link search; clean stats: removed pill badges and genre expand; centered stats header
 - **v1.1.4** — IMDB link paste-to-search; imdb_id in exports; full language names in stats; click genre/language/region to see movies; smaller bottom buttons; export/import moved to bottom
 - **v1.1.3** — Export asks JSON or TXT before downloading
 - **v1.1.2** — Month sections persist open/close state across re-renders; smoother open/close animation
