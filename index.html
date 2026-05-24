@@ -101,13 +101,13 @@ body::-webkit-scrollbar { display: none; }
 }
 
 .settingsPanel.open {
-  max-height: 100px;
+  max-height: 50px;
 }
 
 .settingsRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   padding: 10px 14px;
   border-top: 0.5px solid rgba(255,255,255,0.06);
 }
@@ -816,11 +816,9 @@ body.hide-dates .movieDate { display: none; }
   </div>
   <div class="settingsPanel" id="settingsPanel">
     <div class="settingsRow">
-      <span class="settingsLabel">Show dates</span>
+      <span class="settingsLabel">Dates</span>
       <button class="settingsToggle" id="dateToggle"></button>
-    </div>
-    <div class="settingsRow">
-      <span class="settingsLabel">Columns</span>
+      <span class="settingsLabel" style="margin-left:14px;">Cols</span>
       <div class="gridPicker" id="gridPicker"></div>
     </div>
   </div>
