@@ -165,11 +165,33 @@ flex-direction:column;
 }
 
 .person{
+cursor:pointer;
 display:flex;
-align-items:center;
+flex-direction:column;
+align-items:flex-start;
 overflow:hidden;
 padding:8px 0;
 border-bottom:0.5px solid rgba(255,255,255,0.04);
+}
+
+.personMovies{
+max-height:0;
+overflow:hidden;
+transition:max-height 0.25s ease,padding 0.25s ease;
+flex-wrap:wrap;
+gap:4px;
+padding-left:38px;
+width:100%;
+}
+
+.person.active .personMovies{
+max-height:200px;
+padding-top:6px;
+}
+
+.movieChip{
+font-size:9px;
+color:var(--dim);
 }
 
 .person:last-child{border-bottom:none;}
@@ -254,10 +276,29 @@ flex-direction:column;
 
 .metaItem{
 display:flex;
+flex-wrap:wrap;
 align-items:center;
 justify-content:space-between;
 padding:8px 0;
 border-bottom:0.5px solid rgba(255,255,255,0.04);
+cursor:pointer;
+}
+
+.metaMovies{
+max-height:0;
+overflow:hidden;
+transition:max-height 0.25s ease;
+width:100%;
+}
+
+.metaItem.active .metaMovies{
+max-height:200px;
+padding-top:6px;
+}
+
+.metaMovie{
+font-size:9px;
+color:var(--dim);
 }
 
 .metaItem:last-child{border-bottom:none;}
@@ -948,7 +989,7 @@ director
 
 dList.innerHTML+=`
 
-<div class="person">
+<div class="person" onclick="this.classList.toggle('active')">
 
 <div class="personTop">
 
@@ -965,6 +1006,15 @@ ${data.movies.size} films
 </div>
 
 </div>
+
+</div>
+
+<div class="personMovies">
+
+${[...data.movies]
+.map(movie=>`
+<span class="movieChip">${movie}</span>
+`).join('')}
 
 </div>
 
@@ -987,7 +1037,7 @@ actor
 
 aList.innerHTML+=`
 
-<div class="person">
+<div class="person" onclick="this.classList.toggle('active')">
 
 <div class="personTop">
 
@@ -1004,6 +1054,15 @@ ${data.movies.size} films
 </div>
 
 </div>
+
+</div>
+
+<div class="personMovies">
+
+${[...data.movies]
+.map(movie=>`
+<span class="movieChip">${movie}</span>
+`).join('')}
 
 </div>
 
@@ -1081,10 +1140,13 @@ Object.entries(langCount)
 .forEach(([lang,count])=>{
 
 var fullName=langMap[lang.toLowerCase()]||lang.toUpperCase();
+var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<span class="metaMovie">'+esc(m)+'</span>';}).join(' ');
+
 langWrap.innerHTML+=`
-<div class="metaItem">
+<div class="metaItem" onclick="this.classList.toggle('active')">
 <span class="metaName">${fullName}</span>
 <span class="metaCount">${count}</span>
+<div class="metaMovies">${moviesHtml}</div>
 </div>
 `;
 
@@ -1106,10 +1168,13 @@ Object.entries(countryCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([country,count])=>{
 
+var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<span class="metaMovie">'+esc(m)+'</span>';}).join(' ');
+
 regionWrap.innerHTML+=`
-<div class="metaItem">
+<div class="metaItem" onclick="this.classList.toggle('active')">
 <span class="metaName">${country}</span>
 <span class="metaCount">${count}</span>
+<div class="metaMovies">${moviesHtml}</div>
 </div>
 `;
 
