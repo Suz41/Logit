@@ -136,10 +136,10 @@ body::-webkit-scrollbar { display: none; }
 
 .settingsToggle {
   position: relative;
-  width: 44px;
-  height: 26px;
+  width: 36px;
+  height: 20px;
   background: #39393d;
-  border-radius: 26px;
+  border-radius: 20px;
   border: none;
   cursor: pointer;
   padding: 0;
@@ -152,16 +152,15 @@ body::-webkit-scrollbar { display: none; }
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
   background: #fff;
   border-radius: 50%;
   transition: transform 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .settingsToggle.on { background: #34c759; }
-.settingsToggle.on::after { transform: translateX(18px); }
+.settingsToggle.on::after { transform: translateX(16px); }
 
 .gridPicker {
   display: flex;
@@ -170,20 +169,20 @@ body::-webkit-scrollbar { display: none; }
 }
 
 .gridBtn {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   background: transparent;
   color: var(--muted);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  transition: background 0.15s, color 0.15s;
+  transition: color 0.15s;
 }
 
-.gridBtn.on { background: #fff; color: #000; }
+.gridBtn.on { color: #fff; }
 
 /* ========= BOTTOM NAV ========= */
 
