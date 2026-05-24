@@ -148,27 +148,38 @@ body::-webkit-scrollbar { display: none; }
 .settingsToggle.on { background: #34c759; }
 .settingsToggle.on::after { transform: translateX(16px); }
 
-.gridPicker {
+.gridSlider {
   display: flex;
-  gap: 2px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
 
-.gridBtn {
-  width: 20px;
-  height: 20px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 600;
+.gridSlider input[type="range"] {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #39393d;
+  border-radius: 2px;
+  outline: none;
+}
+
+.gridSlider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  transition: color 0.15s;
 }
 
-.gridBtn.on { color: #fff; }
+.gridValue {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  min-width: 14px;
+  text-align: center;
+}
 
 /* ========= BOTTOM NAV ========= */
 
@@ -819,7 +830,10 @@ body.hide-dates .movieDate { display: none; }
       <span class="settingsLabel">Dates</span>
       <button class="settingsToggle" id="dateToggle"></button>
       <span class="settingsLabel" style="margin-left:14px;">Cols</span>
-      <div class="gridPicker" id="gridPicker"></div>
+      <div class="gridSlider">
+        <input type="range" id="gridSlider" min="3" max="10" step="1" value="3">
+        <span class="gridValue" id="gridValue">3</span>
+      </div>
     </div>
   </div>
 </header>
@@ -1032,27 +1046,18 @@ body.hide-dates .movieDate { display: none; }
   // ========= GRID =========
 
   let gridCount = Number(localStorage.getItem('grid')) || 3;
-  var gridPicker = $('gridPicker');
+  var gridSlider = $('gridSlider');
+  var gridValue = $('gridValue');
 
-  // Build grid buttons
-  function buildGridPicker() {
-    gridPicker.innerHTML = '';
-    [3, 4, 5, 6, 7, 8, 9, 10].forEach(function(n) {
-      var btn = document.createElement('button');
-      btn.className = 'gridBtn' + (n === gridCount ? ' on' : '');
-      btn.textContent = n;
-      btn.onclick = function() {
-        gridCount = n;
-        localStorage.setItem('grid', gridCount);
-        updateGrid();
-        buildGridPicker();
-      };
-      gridPicker.append(btn);
-    });
-  }
-  buildGridPicker();
+  gridSlider.value = gridCount;
+  gridValue.textContent = gridCount;
 
-  updateGrid();
+  gridSlider.oninput = function() {
+    gridCount = Number(this.value);
+    gridValue.textContent = gridCount;
+    localStorage.setItem('grid', gridCount);
+    updateGrid();
+  };
 
   function updateGrid() {
     document.documentElement.style.setProperty('--grid', gridCount);
