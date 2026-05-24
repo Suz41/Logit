@@ -190,8 +190,9 @@ padding-top:6px;
 }
 
 .movieChip{
-font-size:9px;
+font-size:10px;
 color:var(--dim);
+line-height:1.4;
 }
 
 .person:last-child{border-bottom:none;}
@@ -289,6 +290,9 @@ max-height:0;
 overflow:hidden;
 transition:max-height 0.25s ease;
 width:100%;
+display:flex;
+flex-wrap:wrap;
+gap:6px;
 }
 
 .metaItem.active .metaMovies{
@@ -297,8 +301,9 @@ padding-top:6px;
 }
 
 .metaMovie{
-font-size:9px;
+font-size:10px;
 color:var(--dim);
+line-height:1.4;
 }
 
 .metaItem:last-child{border-bottom:none;}
@@ -1140,7 +1145,7 @@ Object.entries(langCount)
 .forEach(([lang,count])=>{
 
 var fullName=langMap[lang.toLowerCase()]||lang.toUpperCase();
-var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<span class="metaMovie">'+esc(m)+'</span>';}).join(' ');
+var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<span class="metaMovie">'+esc(m)+'</span>';}).join('');
 
 langWrap.innerHTML+=`
 <div class="metaItem" onclick="this.classList.toggle('active')">
@@ -1168,7 +1173,7 @@ Object.entries(countryCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([country,count])=>{
 
-var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<span class="metaMovie">'+esc(m)+'</span>';}).join(' ');
+var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<span class="metaMovie">'+esc(m)+'</span>';}).join('');
 
 regionWrap.innerHTML+=`
 <div class="metaItem" onclick="this.classList.toggle('active')">
