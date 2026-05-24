@@ -21,10 +21,11 @@ rel="stylesheet">
 
 :root{
 --bg:#000;
---surface:#1c1c1e;
---surface2:#2c2c2e;
---text:#fff;
---muted:#98989d;
+--surface:#111;
+--surface2:#191919;
+--text:#e5e5e5;
+--muted:#636366;
+--dim:#48484a;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -46,7 +47,7 @@ body::-webkit-scrollbar{display:none;}
 position:sticky;
 top:0;
 z-index:20;
-background:rgba(0,0,0,0.85);
+background:rgba(0,0,0,0.88);
 -webkit-backdrop-filter:saturate(180%) blur(20px);
 backdrop-filter:saturate(180%) blur(20px);
 border-bottom:0.5px solid rgba(255,255,255,0.06);
@@ -91,15 +92,6 @@ flex-direction:column;
 gap:6px;
 }
 
-.sectionLabel{
-font-size:11px;
-font-weight:600;
-color:var(--muted);
-text-transform:uppercase;
-letter-spacing:0.3px;
-padding:0 2px 4px;
-}
-
 /* ========= HERO ========= */
 
 .hero{
@@ -110,7 +102,7 @@ gap:6px;
 
 .statBox{
 background:var(--surface);
-border-radius:8px;
+border-radius:6px;
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -120,11 +112,11 @@ text-align:center;
 }
 
 .statBox h2{
-font-size:22px;
+font-size:20px;
 font-weight:700;
-font-family:'Poppins',sans-serif;
 line-height:1;
-margin-bottom:4px;
+margin-bottom:6px;
+color:#fff;
 }
 
 .statBox p{
@@ -137,8 +129,8 @@ letter-spacing:0.5px;
 
 .timeSub{
 font-size:7px;
-font-weight:600;
-color:var(--muted);
+font-weight:500;
+color:var(--dim);
 margin-top:4px;
 line-height:1.2;
 }
@@ -153,7 +145,7 @@ gap:6px;
 
 .peopleCard{
 background:var(--surface);
-border-radius:8px;
+border-radius:6px;
 padding:12px;
 overflow:hidden;
 }
@@ -170,7 +162,6 @@ margin-bottom:8px;
 .peopleList{
 display:flex;
 flex-direction:column;
-gap:0;
 }
 
 .person{
@@ -180,7 +171,7 @@ flex-direction:column;
 align-items:flex-start;
 overflow:hidden;
 padding:8px 0;
-border-bottom:0.5px solid rgba(255,255,255,0.06);
+border-bottom:0.5px solid rgba(255,255,255,0.04);
 }
 
 .person:last-child{border-bottom:none;}
@@ -193,8 +184,8 @@ gap:8px;
 }
 
 .person img{
-width:32px;
-height:32px;
+width:30px;
+height:30px;
 border-radius:50%;
 object-fit:cover;
 background:var(--surface2);
@@ -209,6 +200,7 @@ overflow:hidden;
 .personName{
 font-size:12px;
 font-weight:500;
+color:var(--text);
 white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
@@ -217,7 +209,7 @@ text-overflow:ellipsis;
 .personCount{
 font-size:10px;
 color:var(--muted);
-margin-top:2px;
+margin-top:1px;
 }
 
 .personMovies{
@@ -225,7 +217,7 @@ display:none;
 flex-wrap:wrap;
 gap:4px;
 margin-top:6px;
-padding-left:40px;
+padding-left:38px;
 }
 
 .person.active .personMovies{
@@ -234,8 +226,7 @@ display:flex;
 
 .movieChip{
 font-size:9px;
-font-weight:500;
-color:var(--muted);
+color:var(--dim);
 }
 
 /* ========= META ========= */
@@ -248,8 +239,8 @@ gap:6px;
 
 .metaCard{
 background:var(--surface);
-border-radius:8px;
-padding:10px;
+border-radius:6px;
+padding:12px;
 overflow:hidden;
 }
 
@@ -271,54 +262,58 @@ letter-spacing:0.3px;
 .metaTotal{
 font-size:10px;
 font-weight:600;
-color:var(--muted);
+color:var(--dim);
 }
 
 .metaWrap{
 display:flex;
-flex-wrap:wrap;
-gap:6px;
+flex-direction:column;
 }
 
 .metaItem{
-padding:6px 8px;
-background:var(--surface2);
-display:flex;
-align-items:center;
-gap:6px;
-font-size:10px;
-font-weight:600;
-color:#ddd;
-white-space:nowrap;
-cursor:pointer;
-flex-direction:column;
-align-items:stretch;
-border-radius:6px;
-}
-
-.metaItemHead{
 display:flex;
 align-items:center;
 justify-content:space-between;
+padding:8px 0;
+border-bottom:0.5px solid rgba(255,255,255,0.04);
+cursor:pointer;
+-webkit-tap-highlight-color:transparent;
+}
+
+.metaItem:last-child{border-bottom:none;}
+
+.metaName{
+font-size:12px;
+font-weight:500;
+color:var(--text);
 white-space:nowrap;
-padding:4px 0;
+overflow:hidden;
+text-overflow:ellipsis;
+flex:1;
+}
+
+.metaCount{
+font-size:11px;
+font-weight:600;
+color:var(--muted);
+margin-left:8px;
 }
 
 .metaMovies{
 display:none;
 flex-wrap:wrap;
 gap:4px;
-padding:4px 0 2px 0;
+padding:6px 0 2px 0;
+width:100%;
 }
 
 .metaItem.active .metaMovies{
 display:flex;
 }
 
-.metaCount{
+.metaMovie{
 font-size:9px;
-color:var(--muted);
-font-weight:700;
+color:var(--dim);
 }
 
 .empty{
@@ -327,7 +322,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 font-size:12px;
-color:var(--muted);
+color:var(--dim);
 text-align:center;
 padding:20px;
 }
@@ -337,8 +332,8 @@ padding:20px;
 .actionBtn{
 height:36px;
 border:none;
-border-radius:8px;
-background:var(--surface2);
+border-radius:6px;
+background:var(--surface);
 color:var(--text);
 font-size:12px;
 font-weight:600;
@@ -349,8 +344,8 @@ font-family:'Inter',sans-serif;
 .actionBtn:active{opacity:0.7;}
 
 .actionBtn.destructive{
-background:#e94560;
-color:#fff;
+background:#2a0a0e;
+color:#ff453a;
 }
 
 /* ========= IMPORT MODAL ========= */
@@ -372,10 +367,10 @@ transition:opacity .2s;
 .importTextarea{
 flex:1;
 width:100%;
-background:var(--surface2);
+background:var(--surface);
 border:none;
 outline:none;
-border-radius:12px;
+border-radius:8px;
 padding:14px;
 color:#fff;
 font-family:'Inter',sans-serif;
@@ -384,7 +379,7 @@ resize:none;
 line-height:1.5;
 }
 
-.importTextarea::placeholder{color:#555;}
+.importTextarea::placeholder{color:var(--dim);}
 
 .importFooter{
 display:flex;
@@ -397,7 +392,7 @@ align-items:center;
 flex:1;
 height:44px;
 border:none;
-border-radius:12px;
+border-radius:8px;
 background:#fff;
 color:#000;
 font-size:14px;
@@ -1123,21 +1118,10 @@ Object.entries(genreCount)
 .forEach(([genre,count])=>{
 
 genreWrap.innerHTML+=`
-
-<div class="metaItem">
-
-<div class="metaItemHead">
-
-${genre}
-
-<span class="metaCount">
-${count}
-</span>
-
+<div class="metaItem" onclick="this.classList.toggle('active')">
+<span class="metaName">${genre}</span>
+<span class="metaCount">${count}</span>
 </div>
-
-</div>
-
 `;
 
 });
@@ -1159,28 +1143,14 @@ Object.entries(langCount)
 .forEach(([lang,count])=>{
 
 var fullName=langMap[lang.toLowerCase()]||lang.toUpperCase();
-var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<div class="movieChip">'+esc(m)+'</div>';}).join('');
+var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<div class="metaMovie">'+esc(m)+'</div>';}).join('');
 
 langWrap.innerHTML+=`
-
 <div class="metaItem" onclick="this.classList.toggle('active')">
-
-<div class="metaItemHead">
-
-${fullName}
-
-<span class="metaCount">
-${count}
-</span>
-
+<span class="metaName">${fullName}</span>
+<span class="metaCount">${count}</span>
+<div class="metaMovies">${moviesHtml}</div>
 </div>
-
-<div class="metaMovies">
-${moviesHtml}
-</div>
-
-</div>
-
 `;
 
 });
@@ -1201,28 +1171,14 @@ Object.entries(countryCount)
 .sort((a,b)=>b[1]-a[1])
 .forEach(([country,count])=>{
 
-var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<div class="movieChip">'+esc(m)+'</div>';}).join('');
+var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<div class="metaMovie">'+esc(m)+'</div>';}).join('');
 
 regionWrap.innerHTML+=`
-
 <div class="metaItem" onclick="this.classList.toggle('active')">
-
-<div class="metaItemHead">
-
-${country}
-
-<span class="metaCount">
-${count}
-</span>
-
+<span class="metaName">${country}</span>
+<span class="metaCount">${count}</span>
+<div class="metaMovies">${moviesHtml}</div>
 </div>
-
-<div class="metaMovies">
-${moviesHtml}
-</div>
-
-</div>
-
 `;
 
 });
