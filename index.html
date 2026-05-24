@@ -1008,6 +1008,10 @@ body.hide-dates .movieDate { display: none; }
   function loadMovies() {
     var cached = localStorage.getItem('movies');
     state.movies = cached ? JSON.parse(cached) : [];
+    // Strip poster arrays to save storage — fetch on-demand instead
+    var stripped = false;
+    state.movies.forEach(function(m) { if (m.p) { delete m.p; stripped = true; } });
+    if (stripped) save();
   }
 
   async function tmdb(url) {
@@ -1385,8 +1389,7 @@ body.hide-dates .movieDate { display: none; }
         r: rating,
         w: watch,
         d: watchDate.value,
-        sp: d.poster_path || '',
-        p: (d.images && d.images.posters ? d.images.posters.map(function(p) { return { u: p.file_path, l: p.iso_639_1 || 'N/A' }; }) : [])
+        sp: d.poster_path || ''
       });
 
       save();
@@ -1488,15 +1491,36 @@ body.hide-dates .movieDate { display: none; }
 
   // ========= POSTERS =========
 
-  $('changePoster').onclick = function() {
+  $('changePoster').onclick = async function() {
     var old = document.querySelector('.posterPicker');
     if (old) old.remove();
 
-    var posters = state.current.p || [];
-    if (posters.length === 0) return;
-
     var picker = document.createElement('div');
     picker.className = 'posterPicker';
+
+    picker.innerHTML = '<div class="posterBg"></div>'
+      + '<div class="posterSheet"><div class="posterSheetHandle"></div><div class="posterGrid" style="text-align:center;padding:20px;color:var(--muted);">Loading posters...</div></div>';
+
+    document.body.append(picker);
+    requestAnimationFrame(function() { picker.classList.add('active'); });
+    pushOverlay(function() { picker.remove(); });
+
+    var tmdbId = state.current.tmdb_id;
+    var posters = [];
+    if (tmdbId) {
+      var d = await tmdb('https://api.themoviedb.org/3/movie/' + tmdbId + '/images?api_key=' + API);
+      if (d && d.posters) {
+        posters = d.posters.map(function(p) { return { u: p.file_path, l: p.iso_639_1 || 'N/A' }; });
+      }
+    }
+
+    if (!picker.isConnected) return;
+
+    var grid = picker.querySelector('.posterGrid');
+    if (posters.length === 0) {
+      grid.textContent = 'No alternative posters found.';
+      return;
+    }
 
     var gridHtml = '';
     posters.forEach(function(p, i) {
@@ -1506,20 +1530,13 @@ body.hide-dates .movieDate { display: none; }
         + '<div class="posterLang">' + esc(p.l) + '</div>'
         + '</div>';
     });
-
-    picker.innerHTML = '<div class="posterBg"></div>'
-      + '<div class="posterSheet"><div class="posterSheetHandle"></div><div class="posterGrid">' + gridHtml + '</div></div>';
-
-    document.body.append(picker);
-
-    // Trigger slide-in
-    requestAnimationFrame(function() { picker.classList.add('active'); });
-
-    pushOverlay(function() { picker.remove(); });
+    grid.innerHTML = gridHtml;
+    grid.style.textAlign = '';
+    grid.style.padding = '';
 
     picker.querySelectorAll('.posterItem').forEach(function(card) {
       card.onclick = function() {
-        var selected = state.current.p[Number(card.dataset.i)].u;
+        var selected = posters[Number(card.dataset.i)].u;
         state.current.sp = selected;
         save();
         renderMovies();

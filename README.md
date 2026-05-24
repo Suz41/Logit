@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.4.4** — Poster arrays no longer stored in localStorage; fetched on-demand from TMDB when opening picker (fixes storage full)
 - **v1.4.3** — Android back button closes overlays (popstate); stats page back falls back to index.html instead of looping
 - **v1.4.2** — Tighter poster grid spacing (3px gap, compact padding)
 - **v1.4.1** — Grid columns 3-10; auto-hide bottom nav on scroll; smaller minimal month headers
