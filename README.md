@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.3.1** — Add movie button in bottom nav (center floating +); removed nav bar from stats page
 - **v1.3.0** — iOS-style bottom nav (Library + Stats); date toggle & column picker in header settings pill with gear icon
 - **v1.1.6** — Bottom nav bar: grid, dates, stats moved out of header
 - **v1.1.5** — Fix IMDB link search; toggle dates button; fix poster height at 10 columns; clean stats: removed pill badges and genre expand; centered stats header
