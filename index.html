@@ -1024,10 +1024,14 @@ body.hide-dates .movieDate { display: none; }
 
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.header')) {
-      settingsPanel.classList.remove('open');
-      settingsBtn.classList.remove('active');
+      closeSettings();
     }
   });
+
+  function closeSettings() {
+    settingsPanel.classList.remove('open');
+    settingsBtn.classList.remove('active');
+  }
 
   // ========= GRID =========
 
@@ -1046,6 +1050,7 @@ body.hide-dates .movieDate { display: none; }
         localStorage.setItem('grid', gridCount);
         updateGrid();
         buildGridPicker();
+        closeSettings();
       };
       gridPicker.append(btn);
     });
@@ -1073,6 +1078,7 @@ body.hide-dates .movieDate { display: none; }
     showDates = !showDates;
     localStorage.setItem('dates', showDates ? '1' : '0');
     updateDateBtn();
+    closeSettings();
   };
 
   // ========= STATS NAV =========
