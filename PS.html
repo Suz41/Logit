@@ -123,6 +123,13 @@ font-weight:600;
 letter-spacing:0.5px;
 }
 
+#timeCount{
+font-size:26px;
+font-weight:700;
+line-height:1;
+color:#fff;
+}
+
 .timeSub{
 font-size:8px;
 font-weight:500;
@@ -480,9 +487,9 @@ Films
 
 <div class="statBox">
 
-<h2 id="timeCount">
+<div id="timeCount">
 0h
-</h2>
+</div>
 
 <p>
 Runtime
@@ -901,7 +908,9 @@ document.getElementById(
 "timeCount"
 ).innerHTML=`
 
+<div style="font-size:26px;font-weight:700;line-height:1;color:#fff;">
 ${timeData.main}
+</div>
 
 <div class="timeSub">
 
