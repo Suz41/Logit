@@ -136,6 +136,7 @@ font-weight:500;
 color:var(--dim);
 margin-top:5px;
 line-height:1.2;
+display:none;
 }
 
 /* ========= PEOPLE ========= */
@@ -485,7 +486,7 @@ Films
 
 </div>
 
-<div class="statBox">
+<div class="statBox" id="runtimeBox" onclick="toggleRuntime()" style="cursor:pointer;">
 
 <div id="timeCount">
 0h
@@ -872,7 +873,7 @@ if(!mins){
 
 return{
 main:"0h",
-sub:"0 min · 0 days"
+sub:"0 min · 0 days · 0 years"
 };
 
 }
@@ -890,7 +891,7 @@ return{
 
 main:`${hours}h`,
 
-sub:`${mins.toLocaleString()} min · ${days} days`
+sub:`${mins.toLocaleString()} min · ${days} days · ${years} years`
 
 };
 
@@ -1197,6 +1198,18 @@ regionWrap.innerHTML+=`
 } /* end init */
 
 init();
+
+/* ========= RUNTIME TOGGLE ========= */
+
+var runtimeExpanded = false;
+
+function toggleRuntime() {
+  runtimeExpanded = !runtimeExpanded;
+  var timeSub = document.querySelector('#timeCount .timeSub');
+  if (timeSub) {
+    timeSub.style.display = runtimeExpanded ? 'block' : 'none';
+  }
+}
 
 /* ========= CLEAR ALL ========= */
 
