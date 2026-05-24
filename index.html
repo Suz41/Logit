@@ -1182,15 +1182,35 @@ body.hide-dates .movieDate { display: none; }
   loadMovies();
   renderMovies();
 
+  // ========= BACK BUTTON (popstate) =========
+
+  var overlayStack = [];
+
+  function pushOverlay(closeFn) {
+    overlayStack.push(closeFn);
+    history.pushState({ overlay: true }, '');
+  }
+
+  window.addEventListener('popstate', function() {
+    if (overlayStack.length > 0) {
+      var close = overlayStack.pop();
+      close();
+    }
+  });
+
   // ========= ADD MODAL =========
 
   $('navAdd').onclick = function() {
     modal.classList.add('active');
     document.body.classList.add('no-scroll');
     queryInput.focus();
+    pushOverlay(closeModal);
   };
 
-  $('closeBtn').onclick = closeModal;
+  $('closeBtn').onclick = function() {
+    overlayStack = overlayStack.filter(function(fn) { return fn !== closeModal; });
+    history.back();
+  };
 
   function closeModal() {
     modal.classList.remove('active');
@@ -1310,6 +1330,8 @@ body.hide-dates .movieDate { display: none; }
     var rating = null;
     var addBtn = sheet.querySelector('.sheetAdd');
 
+    pushOverlay(function() { sheet.remove(); });
+
     sheet.querySelectorAll('.rates button').forEach(function(btn) {
       btn.onclick = function() {
         sheet.querySelectorAll('.rates button').forEach(function(b) { b.classList.remove('active'); });
@@ -1319,7 +1341,7 @@ body.hide-dates .movieDate { display: none; }
       };
     });
 
-    sheet.querySelector('.sheetBg').onclick = function() { sheet.remove(); };
+    sheet.querySelector('.sheetBg').onclick = function() { history.back(); };
 
     addBtn.onclick = async function() {
       if (!rating) return;
@@ -1371,6 +1393,7 @@ body.hide-dates .movieDate { display: none; }
       renderMovies();
       sheet.remove();
       closeModal();
+      overlayStack = [];
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
   }
@@ -1382,6 +1405,7 @@ body.hide-dates .movieDate { display: none; }
     metaModal.classList.add('active');
     document.body.classList.add('no-scroll');
     document.querySelector('.meta').classList.remove('editing');
+    pushOverlay(closeMeta);
 
     $('mPoster').src = img(movie.sp);
     $('mTitle').textContent = movie.t;
@@ -1491,6 +1515,8 @@ body.hide-dates .movieDate { display: none; }
     // Trigger slide-in
     requestAnimationFrame(function() { picker.classList.add('active'); });
 
+    pushOverlay(function() { picker.remove(); });
+
     picker.querySelectorAll('.posterItem').forEach(function(card) {
       card.onclick = function() {
         var selected = state.current.p[Number(card.dataset.i)].u;
@@ -1498,11 +1524,11 @@ body.hide-dates .movieDate { display: none; }
         save();
         renderMovies();
         $('mPoster').src = img(selected);
-        picker.remove();
+        history.back();
       };
     });
 
-    picker.querySelector('.posterBg').onclick = function() { picker.remove(); };
+    picker.querySelector('.posterBg').onclick = function() { history.back(); };
   };
 
   // ========= AUTO-HIDE NAV =========
@@ -1535,16 +1561,8 @@ body.hide-dates .movieDate { display: none; }
   // ========= KEYBOARD =========
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      if (document.querySelector('.ratingSheet')) {
-        document.querySelector('.ratingSheet').remove();
-      } else if (document.querySelector('.posterPicker')) {
-        document.querySelector('.posterPicker').remove();
-      } else if (metaModal.classList.contains('active')) {
-        closeMeta();
-      } else if (modal.classList.contains('active')) {
-        closeModal();
-      }
+    if (e.key === 'Escape' && overlayStack.length > 0) {
+      history.back();
     }
   });
 

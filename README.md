@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.4.3** — Android back button closes overlays (popstate); stats page back falls back to index.html instead of looping
 - **v1.4.2** — Tighter poster grid spacing (3px gap, compact padding)
 - **v1.4.1** — Grid columns 3-10; auto-hide bottom nav on scroll; smaller minimal month headers
 - **v1.4.0** — iOS-style clean redesign: frosted glass header, rounded cards with shadows, iOS system colors, polished empty state, sheet drag handles, bigger toggle switches, blue add button

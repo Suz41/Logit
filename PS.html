@@ -399,7 +399,7 @@ min-height:16px;
 
 <button
 class="headBtn"
-onclick="history.back()">
+onclick="if(history.length>1)history.back();else location.href='index.html'">
 &lsaquo;
 </button>
 
