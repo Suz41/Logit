@@ -883,7 +883,7 @@ body.hide-dates .movieDate { display: none; }
       <span class="settingsLabel" style="margin-left:14px;">Cols</span>
       <div class="gridSlider">
         <div class="gridTicks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-        <input type="range" id="gridSlider" min="3" max="10" step="1" value="3">
+        <input type="range" id="gridSlider" min="3" max="10" step="any" value="3">
         <span class="gridValue" id="gridValue">3</span>
       </div>
     </div>
@@ -1105,7 +1105,7 @@ body.hide-dates .movieDate { display: none; }
   gridValue.textContent = gridCount;
 
   gridSlider.oninput = function() {
-    gridCount = Number(this.value);
+    gridCount = Math.round(Number(this.value));
     gridValue.textContent = gridCount;
     localStorage.setItem('grid', gridCount);
     updateGrid();
