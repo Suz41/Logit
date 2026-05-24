@@ -104,7 +104,7 @@ body::-webkit-scrollbar { display: none; }
   position: absolute;
   top: 38px;
   right: 0;
-  width: 190px;
+  width: 210px;
   background: #2c2c2e;
   border-radius: 14px;
   padding: 4px;
@@ -168,17 +168,18 @@ body::-webkit-scrollbar { display: none; }
 
 .gridPicker {
   display: flex;
-  gap: 3px;
+  gap: 2px;
+  flex-wrap: wrap;
 }
 
 .gridBtn {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border: none;
-  border-radius: 7px;
+  border-radius: 6px;
   background: transparent;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
@@ -204,6 +205,11 @@ body::-webkit-scrollbar { display: none; }
   justify-content: space-around;
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0);
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.bottomNav.hidden {
+  transform: translateY(100%);
 }
 
 .navItem {
@@ -269,7 +275,7 @@ body { padding-bottom: 64px; }
 .monthSection.active .monthMovies { grid-template-rows: 1fr; }
 
 .monthHead {
-  height: 32px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -278,31 +284,29 @@ body { padding-bottom: 64px; }
   user-select: none;
 }
 
-.monthLeft { display: flex; align-items: center; gap: 8px; }
+.monthLeft { display: flex; align-items: center; gap: 6px; }
 
 .monthArrow {
-  font-size: 11px;
-  color: var(--muted);
+  font-size: 9px;
+  color: #48484a;
   transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
-  width: 12px;
+  width: 10px;
   text-align: center;
 }
 .monthSection.active .monthArrow { transform: rotate(90deg); }
 
 .monthHead h2 {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: -0.2px;
-  color: #fff;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .monthHead .count {
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 600;
-  background: var(--surface);
-  padding: 2px 8px;
-  border-radius: 999px;
+  font-size: 9px;
+  color: #48484a;
+  font-weight: 700;
 }
 
 .moviesGrid {
@@ -1500,6 +1504,27 @@ body.hide-dates .movieDate { display: none; }
 
     picker.querySelector('.posterBg').onclick = function() { picker.remove(); };
   };
+
+  // ========= AUTO-HIDE NAV =========
+
+  var navBar = document.querySelector('.bottomNav');
+  var lastScroll = 0;
+  var scrollTicking = false;
+
+  window.addEventListener('scroll', function() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(function() {
+      var st = window.scrollY;
+      if (st > lastScroll && st > 80) {
+        navBar.classList.add('hidden');
+      } else {
+        navBar.classList.remove('hidden');
+      }
+      lastScroll = st;
+      scrollTicking = false;
+    });
+  });
 
   // ========= CLOSE META =========
 
