@@ -37,11 +37,12 @@ box-sizing:border-box;
 
 html,
 body{
-height:100%;
+min-height:100%;
 background:var(--bg);
 color:var(--text-main);
 font-family:'Inter',sans-serif;
 overflow-x:hidden;
+padding-bottom:60px;
 }
 
 body::-webkit-scrollbar{
@@ -389,6 +390,46 @@ margin-top:8px;
 min-height:16px;
 }
 
+/* ========= BOTTOM NAV ========= */
+
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(10,10,10,0.92);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 0.5px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.navItem {
+  border: none;
+  background: none;
+  color: #555;
+  font-size: 9px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 6px 28px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.2s ease;
+}
+
+.navItem .navIcon { width: 22px; height: 22px; transition: color 0.2s ease; }
+
+.navItem.on { color: #fff; }
+
 </style>
 </head>
 
@@ -406,6 +447,7 @@ onclick="history.back()">
 Stats
 </div>
 
+<div style="width:30px"></div>
 
 </header>
 
@@ -1591,6 +1633,17 @@ function doExport(format){
 }
 
 </script>
+
+<nav class="bottomNav">
+  <button class="navItem" id="navLibrary" onclick="window.location.href='index.html'">
+    <svg class="navIcon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    Library
+  </button>
+  <button class="navItem on" id="navStats">
+    <svg class="navIcon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+    Stats
+  </button>
+</nav>
 
 </body>
 </html>
