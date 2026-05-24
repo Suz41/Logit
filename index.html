@@ -234,20 +234,19 @@ body::-webkit-scrollbar { display: none; }
 .navItem.on { color: #fff; }
 
 .navAdd {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: #fff;
   color: #000;
-  margin-top: -20px;
+  margin-top: -24px;
   padding: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0;
   box-shadow: 0 4px 16px rgba(255,255,255,0.12);
   transition: transform 0.15s ease;
+  flex-shrink: 0;
 }
 
 .navAdd:active { transform: scale(0.92); }
@@ -1126,7 +1125,7 @@ body.hide-dates .movieDate { display: none; }
       var monthKey = date.getFullYear() + '-' + date.getMonth();
       if (!grouped[monthKey]) {
         grouped[monthKey] = {
-          label: date.toLocaleString('default', { month: 'long', year: 'numeric' }),
+          label: date.toLocaleString('default', { month: 'long' }),
           movies: []
         };
       }
