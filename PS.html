@@ -20,19 +20,17 @@ rel="stylesheet">
 <style>
 
 :root{
---bg:#000;
---surface:#000;
---surface2:#000;
 --text:#e5e5e5;
 --muted:#636366;
 --dim:#48484a;
+--border:rgba(255,255,255,0.06);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
 html,body{
 min-height:100%;
-background:var(--bg);
+background:#000;
 color:var(--text);
 font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 overflow-x:hidden;
@@ -48,9 +46,7 @@ position:sticky;
 top:0;
 z-index:20;
 background:#000;
--webkit-backdrop-filter:saturate(180%) blur(20px);
-backdrop-filter:saturate(180%) blur(20px);
-border-bottom:0.5px solid rgba(255,255,255,0.06);
+border-bottom:0.5px solid var(--border);
 }
 
 .headerRow{
@@ -75,7 +71,7 @@ width:32px;
 height:32px;
 border:none;
 border-radius:50%;
-background:var(--surface);
+background:#111;
 color:#fff;
 display:flex;
 align-items:center;
@@ -89,7 +85,7 @@ cursor:pointer;
 padding:8px 12px;
 display:flex;
 flex-direction:column;
-gap:6px;
+gap:12px;
 }
 
 /* ========= HERO ========= */
@@ -97,22 +93,22 @@ gap:6px;
 .hero{
 display:grid;
 grid-template-columns:repeat(3,1fr);
-gap:6px;
+gap:8px;
 }
 
 .statBox{
-background:var(--surface);
-border-radius:6px;
+border:0.5px solid var(--border);
+border-radius:10px;
 display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-padding:14px 6px;
+padding:16px 6px;
 text-align:center;
 }
 
 .statBox h2{
-font-size:20px;
+font-size:22px;
 font-weight:700;
 line-height:1;
 margin-bottom:6px;
@@ -120,7 +116,7 @@ color:#fff;
 }
 
 .statBox p{
-font-size:9px;
+font-size:10px;
 color:var(--muted);
 text-transform:uppercase;
 font-weight:600;
@@ -140,14 +136,7 @@ line-height:1.2;
 .peopleGrid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:6px;
-}
-
-.peopleCard{
-background:var(--surface);
-border-radius:6px;
-padding:12px;
-overflow:hidden;
+gap:8px;
 }
 
 .sectionTitle{
@@ -155,8 +144,15 @@ font-size:11px;
 font-weight:600;
 color:var(--muted);
 text-transform:uppercase;
-letter-spacing:0.3px;
-margin-bottom:8px;
+letter-spacing:0.5px;
+margin-bottom:10px;
+}
+
+.peopleCard{
+border:0.5px solid var(--border);
+border-radius:10px;
+padding:12px;
+overflow:hidden;
 }
 
 .peopleList{
@@ -170,8 +166,11 @@ display:flex;
 flex-direction:column;
 align-items:flex-start;
 overflow:hidden;
-padding:6px 0;
-background:#000;
+padding:8px 0;
+}
+
+.person+.person{
+border-top:0.5px solid var(--border);
 }
 
 .personMovies{
@@ -179,17 +178,15 @@ max-height:0;
 overflow:hidden;
 transition:max-height 0.25s ease,padding 0.25s ease;
 flex-wrap:wrap;
-gap:4px;
-padding-left:38px;
+gap:6px;
+padding-left:40px;
 width:100%;
-}
-
-.person.active{
+display:flex;
 }
 
 .person.active .personMovies{
 max-height:none;
-padding-top:6px;
+padding-top:8px;
 }
 
 .movieChip{
@@ -198,13 +195,11 @@ color:var(--muted);
 line-height:1.4;
 }
 
-.person:last-child{}
-
 .personTop{
 width:100%;
 display:flex;
 align-items:center;
-gap:8px;
+gap:10px;
 }
 
 .person img{
@@ -212,7 +207,7 @@ width:30px;
 height:30px;
 border-radius:50%;
 object-fit:cover;
-background:var(--surface2);
+background:#111;
 flex-shrink:0;
 }
 
@@ -236,20 +231,23 @@ color:var(--muted);
 margin-top:1px;
 }
 
-
 /* ========= META ========= */
 
 .metaGrid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:6px;
+gap:8px;
 }
 
 .metaCard{
-background:var(--surface);
-border-radius:6px;
+border:0.5px solid var(--border);
+border-radius:10px;
 padding:12px;
 overflow:hidden;
+}
+
+.metaCard+.metaCard{
+margin-top:0;
 }
 
 .metaHead{
@@ -264,7 +262,7 @@ font-size:11px;
 font-weight:600;
 color:var(--muted);
 text-transform:uppercase;
-letter-spacing:0.3px;
+letter-spacing:0.5px;
 }
 
 .metaTotal{
@@ -283,9 +281,12 @@ display:flex;
 flex-wrap:wrap;
 align-items:center;
 justify-content:space-between;
-padding:6px 0;
+padding:7px 0;
 cursor:pointer;
-background:#000;
+}
+
+.metaItem+.metaItem{
+border-top:0.5px solid var(--border);
 }
 
 .metaMovies{
@@ -298,12 +299,9 @@ flex-wrap:wrap;
 gap:6px;
 }
 
-.metaItem.active{
-}
-
 .metaItem.active .metaMovies{
 max-height:none;
-padding-top:6px;
+padding-top:8px;
 }
 
 .metaMovie{
@@ -314,10 +312,8 @@ line-height:1.4;
 
 .metaMovie::before{
 content:'· ';
-color:var(--muted);
+color:var(--dim);
 }
-
-.metaItem:last-child{}
 
 .metaName{
 font-size:12px;
@@ -336,7 +332,6 @@ color:var(--muted);
 margin-left:8px;
 }
 
-
 .empty{
 height:100%;
 display:flex;
@@ -351,13 +346,13 @@ padding:20px;
 /* ========= BUTTONS ========= */
 
 .actionBtn{
-height:36px;
-border:none;
-border-radius:6px;
-background:var(--surface);
+height:40px;
+border:0.5px solid var(--border);
+border-radius:10px;
+background:transparent;
 color:var(--text);
-font-size:12px;
-font-weight:600;
+font-size:13px;
+font-weight:500;
 cursor:pointer;
 font-family:'Inter',sans-serif;
 }
@@ -365,8 +360,8 @@ font-family:'Inter',sans-serif;
 .actionBtn:active{opacity:0.7;}
 
 .actionBtn.destructive{
-background:#2a0a0e;
 color:#ff453a;
+border-color:rgba(255,69,58,0.2);
 }
 
 /* ========= IMPORT MODAL ========= */
@@ -374,7 +369,7 @@ color:#ff453a;
 .importModal{
 position:fixed;
 inset:0;
-background:var(--bg);
+background:#000;
 z-index:350;
 padding:12px;
 display:none;
@@ -388,10 +383,10 @@ transition:opacity .2s;
 .importTextarea{
 flex:1;
 width:100%;
-background:var(--surface);
-border:none;
+background:#111;
+border:0.5px solid var(--border);
 outline:none;
-border-radius:8px;
+border-radius:10px;
 padding:14px;
 color:#fff;
 font-family:'Inter',sans-serif;
@@ -413,11 +408,11 @@ align-items:center;
 flex:1;
 height:44px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:#fff;
 color:#000;
 font-size:14px;
-font-weight:700;
+font-weight:600;
 cursor:pointer;
 }
 
@@ -454,7 +449,7 @@ min-height:16px;
     <button class="headBtn" onclick="closeImportModal()" style="width:34px;height:34px;">&times;</button>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:12px;">
-    <label style="flex:1;height:44px;border-radius:12px;background:var(--surface-light);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:600;color:#fff;gap:6px;">
+    <label style="flex:1;height:44px;border-radius:10px;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:500;color:#fff;gap:6px;">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload JSON
       <input type="file" id="fileInput" accept=".json" style="display:none;">
@@ -614,9 +609,9 @@ id="regionWrap">
 
 </section>
 
-<div style="padding:10px;display:flex;flex-direction:column;gap:6px;margin-bottom:30px;">
+<div style="padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:30px;">
 
-<div style="display:flex;gap:6px;">
+<div style="display:flex;gap:8px;">
 <button
 onclick="exportMovies()"
 class="actionBtn" style="flex:1;">
@@ -870,7 +865,7 @@ if(!mins){
 
 return{
 main:"0h",
-sub:"0 min • 0 days • 0 years"
+sub:"0 min · 0 days · 0 years"
 };
 
 }
@@ -888,13 +883,7 @@ return{
 
 main:`${hours}h`,
 
-sub:`
-${mins.toLocaleString()} min
-•
-${days} days
-•
-${years} years
-`
+sub:`${mins.toLocaleString()} min · ${days} days · ${years} years`
 
 };
 
@@ -968,11 +957,11 @@ data.results?.[0]?.profile_path;
 
 return path
 ?`https://image.tmdb.org/t/p/w185${path}`
-:'https://placehold.co/80x80/1a1a1a/888?text=%20';
+:'https://placehold.co/80x80/111/666?text=%20';
 
 }catch{
 
-return'https://placehold.co/80x80/1a1a1a/888?text=%20';
+return'https://placehold.co/80x80/111/666?text=%20';
 
 }
 
@@ -1536,8 +1525,8 @@ exportModal.innerHTML = '<div style="display:flex;align-items:center;justify-con
   + '<button class="headBtn" onclick="closeExportModal()" style="width:34px;height:34px;">&times;</button>'
   + '</div>'
   + '<div style="display:flex;flex-direction:column;gap:8px;margin-top:20px;">'
-  + '<button onclick="doExport(\'json\')" style="height:48px;border:none;border-radius:12px;background:var(--surface-light);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">JSON</button>'
-  + '<button onclick="doExport(\'txt\')" style="height:48px;border:none;border-radius:12px;background:var(--surface-light);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;">TXT</button>'
+  + '<button onclick="doExport(\'json\')" style="height:48px;border:none;border-radius:10px;border:0.5px solid var(--border);background:transparent;color:#fff;font-size:15px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif;">JSON</button>'
+  + '<button onclick="doExport(\'txt\')" style="height:48px;border:none;border-radius:10px;border:0.5px solid var(--border);background:transparent;color:#fff;font-size:15px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif;">TXT</button>'
   + '</div>';
 document.body.appendChild(exportModal);
 
