@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.4.0** — iOS-style clean redesign: frosted glass header, rounded cards with shadows, iOS system colors, polished empty state, sheet drag handles, bigger toggle switches, blue add button
 - **v1.3.1** — Add movie button in bottom nav (center floating +); removed nav bar from stats page
 - **v1.3.0** — iOS-style bottom nav (Library + Stats); date toggle & column picker in header settings pill with gear icon
 - **v1.1.6** — Bottom nav bar: grid, dates, stats moved out of header
