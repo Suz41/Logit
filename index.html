@@ -1103,6 +1103,7 @@ body.hide-dates .movieDate { display: none; }
 
   gridSlider.value = gridCount;
   gridValue.textContent = gridCount;
+  updateGrid();
 
   gridSlider.oninput = function() {
     gridCount = Math.round(Number(this.value));
