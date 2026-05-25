@@ -6,6 +6,8 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.4.8** — Inline search bar in settings row (filter logged movies by title); grid column size persists on load; about page theme matches main/stats
+- **v1.4.7** — Fix top directors/actors not expanding in stats (duplicate click handler)
 - **v1.4.5** — Month headers show month only (no year); add button flush in nav bar; logo left-aligned plain white, bumped to 22px
 - **v1.4.4** — Poster arrays no longer stored in localStorage; fetched on-demand from TMDB when opening picker (fixes storage full)
 - **v1.4.3** — Android back button closes overlays (popstate); stats page back falls back to index.html instead of looping
