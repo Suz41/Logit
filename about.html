@@ -684,6 +684,16 @@ style="width:0%">
 
 </div>
 
+<!-- API KEY -->
+
+<div style="padding:0 12px;margin-bottom:12px;">
+<button
+onclick="setApiKey()"
+style="width:100%;height:44px;border:0.5px solid var(--border);border-radius:10px;background:transparent;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;">
+TMDB API Key
+</button>
+</div>
+
 </section>
 
 <div class="footer">
@@ -806,6 +816,25 @@ const movies=
 JSON.parse(
 localStorage.getItem("movies")
 )||[];
+
+/* ========= API KEY ========= */
+
+function setApiKey(){
+var current=localStorage.getItem('tmdb_key')||'';
+var key=prompt('Enter your TMDB API Key:',current);
+if(key!==null){
+key=key.trim();
+if(key){
+localStorage.setItem('tmdb_key',key);
+alert('API key saved! Reload to apply.');
+location.reload();
+}else if(key===''){
+localStorage.removeItem('tmdb_key');
+alert('API key removed.');
+location.reload();
+}
+}
+}
 
 </script>
 

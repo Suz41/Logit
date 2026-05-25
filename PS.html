@@ -615,6 +615,56 @@ id="regionWrap">
 
 </div>
 
+<!-- ========= REWATCHED ========= -->
+
+<div class="metaCard" style="margin-top:8px;">
+
+<div class="metaHead">
+
+<div class="metaTitle">
+Most Rewatched
+</div>
+
+<div
+class="metaTotal"
+id="rewatchTotal">
+0
+</div>
+
+</div>
+
+<div
+class="metaWrap"
+id="rewatchWrap">
+</div>
+
+</div>
+
+<!-- ========= RELEASE YEARS ========= -->
+
+<div class="metaCard">
+
+<div class="metaHead">
+
+<div class="metaTitle">
+Release Years
+</div>
+
+<div
+class="metaTotal"
+id="yearTotal">
+0
+</div>
+
+</div>
+
+<div
+class="metaWrap"
+id="yearWrap">
+</div>
+
+</div>
+
 </section>
 
 <div style="padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:30px;">
@@ -636,12 +686,6 @@ Import
 onclick="window.location.href='about.html'"
 class="actionBtn" style="width:100%;">
 About
-</button>
-
-<button
-onclick="setApiKey()"
-class="actionBtn" style="width:100%;">
-TMDB API Key
 </button>
 
 <button
@@ -1190,6 +1234,58 @@ regionWrap.innerHTML+=`
 `;
 
 });
+
+/* ========= REWATCHED ========= */
+
+var rewatchMap = {};
+movies.forEach(function(m) {
+  var title = m.t || '';
+  if (!title) return;
+  if (!rewatchMap[title]) rewatchMap[title] = { count: 0, sp: '' };
+  rewatchMap[title].count++;
+  if (m.sp) rewatchMap[title].sp = m.sp;
+});
+
+var rewatched = Object.entries(rewatchMap)
+  .filter(function(e) { return e[1].count > 1; })
+  .sort(function(a, b) { return b[1].count - a[1].count; })
+  .slice(0, 10);
+
+document.getElementById('rewatchTotal').innerText = rewatched.length;
+
+var rewatchWrap = document.getElementById('rewatchWrap');
+if (rewatched.length === 0) {
+  rewatchWrap.innerHTML = '<div class="empty">No rewatches yet</div>';
+} else {
+  rewatched.forEach(function(entry) {
+    rewatchWrap.innerHTML += '<div class="metaItem"><span class="metaName">' + esc(entry[0]) + '</span><span class="metaCount">' + entry[1].count + 'x</span></div>';
+  });
+}
+
+/* ========= RELEASE YEARS ========= */
+
+var decadeCount = {};
+movies.forEach(function(m) {
+  var yr = parseInt(m.yr);
+  if (!yr || isNaN(yr)) return;
+  var decade = Math.floor(yr / 10) * 10 + 's';
+  decadeCount[decade] = (decadeCount[decade] || 0) + 1;
+});
+
+var decades = Object.entries(decadeCount).sort(function(a, b) {
+  return parseInt(b[0]) - parseInt(a[0]);
+});
+
+document.getElementById('yearTotal').innerText = decades.length;
+
+var yearWrap = document.getElementById('yearWrap');
+if (decades.length === 0) {
+  yearWrap.innerHTML = '<div class="empty">No year data</div>';
+} else {
+  decades.forEach(function(entry) {
+    yearWrap.innerHTML += '<div class="metaItem"><span class="metaName">' + entry[0] + '</span><span class="metaCount">' + entry[1] + '</span></div>';
+  });
+}
 
 } /* end init */
 
