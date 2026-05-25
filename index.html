@@ -296,6 +296,57 @@ body::-webkit-scrollbar { display: none; }
 
 body { padding-bottom: 64px; }
 
+/* ========= LIBRARY SEARCH ========= */
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin: 6px 12px 0;
+  padding: 0 12px;
+  background: #111;
+  border-radius: 10px;
+  gap: 8px;
+}
+
+.searchBar svg {
+  flex-shrink: 0;
+  color: #48484a;
+}
+
+.searchBar input {
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+.searchBar input::placeholder { color: #48484a; }
+
+.searchBar .clearBtn {
+  display: none;
+}
+.searchBar .clearBtn.visible { display: flex; }
+
+.searchResults {
+  padding: 8px 12px 30px;
+  display: grid;
+  grid-template-columns: repeat(var(--grid), 1fr);
+  gap: 3px;
+}
+
+.noResults {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 0;
+  color: #48484a;
+  font-size: 13px;
+}
+
 /* ========= LIBRARY ========= */
 
 .library {
@@ -890,6 +941,12 @@ body.hide-dates .movieDate { display: none; }
   </div>
 </header>
 
+<div class="searchBar" id="searchBar">
+  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input type="text" placeholder="Search your movies" id="libSearch">
+  <button class="clearBtn" id="clearSearch">&times;</button>
+</div>
+
 <section class="library" id="library"></section>
 
 <nav class="bottomNav">
@@ -1218,6 +1275,63 @@ body.hide-dates .movieDate { display: none; }
 
   loadMovies();
   renderMovies();
+
+  // ========= LIBRARY SEARCH =========
+
+  var libSearchInput = $('libSearch');
+  var clearSearchBtn = $('clearSearch');
+  var searchDebounce;
+
+  libSearchInput.addEventListener('input', function() {
+    clearSearchBtn.classList.toggle('visible', libSearchInput.value.length > 0);
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(filterLibrary, 150);
+  });
+
+  clearSearchBtn.onclick = function() {
+    libSearchInput.value = '';
+    clearSearchBtn.classList.remove('visible');
+    renderMovies();
+    libSearchInput.focus();
+  };
+
+  function filterLibrary() {
+    var q = libSearchInput.value.trim().toLowerCase();
+    if (q.length < 2) {
+      renderMovies();
+      return;
+    }
+
+    var matches = state.movies.filter(function(m) {
+      return (m.t || '').toLowerCase().indexOf(q) !== -1;
+    });
+
+    library.innerHTML = '';
+
+    if (matches.length === 0) {
+      library.innerHTML = '<div class="noResults">No movies found</div>';
+      return;
+    }
+
+    var grid = document.createElement('div');
+    grid.className = 'searchResults';
+
+    matches.forEach(function(movie) {
+      var date = new Date(movie.d);
+      var day = date.getDate();
+      var month = date.toLocaleString('default', { month: 'short' });
+      var card = document.createElement('div');
+      card.className = 'movie';
+      card.innerHTML = '<img src="' + img(movie.sp) + '" loading="lazy">'
+        + '<div class="movieDate"><span class="day">' + day + '</span> ' + month
+        + (/^Rewatch/i.test(movie.w) ? ' <span class="rewatch">R</span>' : '')
+        + '</div>';
+      card.onclick = function() { openMeta(movie); };
+      grid.append(card);
+    });
+
+    library.append(grid);
+  }
 
   // ========= BACK BUTTON (popstate) =========
 
