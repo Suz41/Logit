@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.4.9** — Most Rewatched card in stats; Release Years decade breakdown; API key moved to about page
 - **v1.4.8** — Inline search bar in settings row (filter logged movies by title); grid column size persists on load; about page theme matches main/stats
 - **v1.4.7** — Fix top directors/actors not expanding in stats (duplicate click handler)
 - **v1.4.5** — Month headers show month only (no year); add button flush in nav bar; logo left-aligned plain white, bumped to 22px
