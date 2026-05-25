@@ -1216,7 +1216,7 @@ function toggleRuntime() {
 function clearAllMovies(){
 if(!confirm('Delete all movies? This cannot be undone.'))return;
 localStorage.removeItem('movies');
-if(LogitSync.isConfigured())LogitSync.push([]);
+
 location.reload();
 }
 
@@ -1400,7 +1400,6 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
-if(LogitSync.isConfigured())LogitSync.push(movies);
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 setTimeout(function(){closeImportModal();location.reload();},1500);
@@ -1419,7 +1418,6 @@ movies.unshift(m);
 count++;
 });
 localStorage.setItem('movies',JSON.stringify(movies));
-if(LogitSync.isConfigured())LogitSync.push(movies);
 document.getElementById('importStatus').textContent=count+' imported from JSON';
 setTimeout(function(){closeImportModal();location.reload();},1500);
 return;
@@ -1511,7 +1509,6 @@ imported++;
 }
 
 localStorage.setItem('movies',JSON.stringify(movies));
-if(LogitSync.isConfigured())LogitSync.push(movies);
 statusEl.textContent=imported+' imported'+(failed>0?', '+failed+' failed':'');
 btn.disabled=false;
 
