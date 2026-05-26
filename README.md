@@ -6,7 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
-- **v1.5.2** — Profile page with avatar, bio, quick stats, month streak, activity heatmap
+- **v1.5.2** — Stats layout cleanup; profile page removed
 - **v1.5.1** — Compact stats layout: all cards in 2-col grid, tighter spacing, smaller avatars
 - **v1.5.0** — Moved Clear All Data to About page alongside API key
 - **v1.4.9** — Most Rewatched card in stats; Release Years decade breakdown; API key moved to about page
