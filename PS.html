@@ -688,11 +688,6 @@ class="actionBtn" style="width:100%;">
 About
 </button>
 
-<button
-onclick="clearAllMovies()"
-class="actionBtn destructive" style="width:100%;">
-Clear All Movies
-</button>
 
 </div>
 
@@ -1301,15 +1296,6 @@ function toggleRuntime() {
   if (timeSub) {
     timeSub.style.display = runtimeExpanded ? 'block' : 'none';
   }
-}
-
-/* ========= CLEAR ALL ========= */
-
-function clearAllMovies(){
-if(!confirm('Delete all movies? This cannot be undone.'))return;
-localStorage.removeItem('movies');
-
-location.reload();
 }
 
 /* ========= IMPORT ========= */
