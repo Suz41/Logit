@@ -234,11 +234,44 @@ font-size:8px;
 color:var(--dim);
 }
 
+.heatmapWrap{
+display:flex;
+gap:4px;
+}
+
+.heatmapDayLabels{
+display:flex;
+flex-direction:column;
+gap:2px;
+padding-top:0;
+}
+
+.heatmapDayLabel{
+height:12px;
+font-size:7px;
+color:var(--dim);
+display:flex;
+align-items:center;
+}
+
 .heatmapGrid{
 display:flex;
 gap:2px;
 flex-wrap:wrap;
 justify-content:flex-start;
+flex:1;
+}
+
+.heatmapTotal{
+font-size:10px;
+color:var(--muted);
+margin-top:8px;
+text-align:right;
+}
+
+.heatmapTotal strong{
+color:#fff;
+font-weight:600;
 }
 
 .heatmapCell{
@@ -308,57 +341,12 @@ color:#fff;
 border-color:rgba(255,255,255,0.12);
 }
 
-/* ========= GENRES ========= */
-
-.genreRow{
-display:flex;
-align-items:center;
-gap:8px;
-margin-bottom:6px;
-}
-
-.genreLabel{
-font-size:11px;
-color:var(--text);
-width:68px;
-flex-shrink:0;
-text-align:right;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-}
-
-.genreBarWrap{
-flex:1;
-height:14px;
-background:rgba(255,255,255,0.04);
-border-radius:3px;
-overflow:hidden;
-}
-
-.genreBar{
-height:100%;
-border-radius:3px;
-background:var(--green);
-min-width:2px;
-transition:width 0.6s ease;
-opacity:0.7;
-}
-
-.genreCount{
-font-size:10px;
-color:var(--dim);
-width:22px;
-text-align:right;
-flex-shrink:0;
-}
-
 /* ========= RATING DISTRIBUTION ========= */
 
 .ratingDist{
 display:flex;
 align-items:flex-end;
-gap:5px;
+gap:4px;
 height:50px;
 position:relative;
 }
@@ -387,7 +375,7 @@ color:var(--dim);
 margin-top:4px;
 }
 
-/* ========= PEOPLE ========= */
+/* ========= SECTION LABEL ========= */
 
 .sectionLabel{
 font-size:11px;
@@ -396,30 +384,6 @@ color:var(--muted);
 text-transform:uppercase;
 letter-spacing:0.5px;
 margin-bottom:8px;
-}
-
-.peopleGrid{
-display:flex;
-flex-wrap:wrap;
-gap:5px;
-}
-
-.personChip{
-height:26px;
-padding:0 10px;
-border-radius:7px;
-background:rgba(255,255,255,0.05);
-display:flex;
-align-items:center;
-gap:4px;
-font-size:11px;
-color:var(--text);
-border:0.5px solid var(--border);
-}
-
-.personChip .pCount{
-font-size:9px;
-color:var(--dim);
 }
 
 /* ========= BOTTOM NAV ========= */
@@ -756,11 +720,31 @@ Activity
 <div class="yearPicker" id="yearPicker">
 </div>
 
+<div class="heatmapWrap">
+
+<div class="heatmapDayLabels">
+<div class="heatmapDayLabel">Mon</div>
+<div class="heatmapDayLabel"></div>
+<div class="heatmapDayLabel">Wed</div>
+<div class="heatmapDayLabel"></div>
+<div class="heatmapDayLabel">Fri</div>
+<div class="heatmapDayLabel"></div>
+<div class="heatmapDayLabel">Sun</div>
+</div>
+
+<div>
+
 <div class="heatmapMonths" id="heatmapMonths">
 </div>
 
 <div class="heatmapGrid" id="heatmapGrid">
 </div>
+
+</div>
+
+</div>
+
+<div class="heatmapTotal" id="heatmapTotal"></div>
 
 </div>
 
@@ -936,19 +920,25 @@ $('statAvg').textContent=movies.length?(totalRating/movies.length).toFixed(1):'0
 /* ========= RATING DISTRIBUTION ========= */
 
 function renderRatingDist(){
+var keys=['0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
 var bins={};
-for(var i=1;i<=10;i++)bins[i]=0;
+keys.forEach(function(k){bins[k]=0;});
 movies.forEach(function(m){
-var r=Math.round(Number(m.r));
-if(r>=1&&r<=10)bins[r]++;
+var r=Number(m.r);
+if(r>=0.5&&r<=5){
+var rounded=Math.round(r*2)/2;
+var key=rounded.toFixed(1);
+if(bins[key]!==undefined)bins[key]++;
+}
 });
 var max=0;
-for(var k in bins){if(bins[k]>max)max=bins[k];}
+keys.forEach(function(k){if(bins[k]>max)max=bins[k];});
 var html='';
-for(var i=1;i<=10;i++){
-var h=max?Math.round(bins[i]/max*42):0;
-html+='<div class="ratingCol"><div class="ratingBar" style="height:'+h+'px"></div><div class="ratingLabel">'+i+'</div></div>';
-}
+keys.forEach(function(k){
+var h=max?Math.round(bins[k]/max*42):0;
+var label=k.endsWith('.0')?k.replace('.0',''):k;
+html+='<div class="ratingCol"><div class="ratingBar" style="height:'+h+'px"></div><div class="ratingLabel">'+label+'</div></div>';
+});
 $('ratingDist').innerHTML=html;
 }
 
@@ -1025,10 +1015,12 @@ var dayOfWeek=startDate.getDay();
 for(var d=0;d<dayOfWeek;d++){
 gridHtml+='<div class="heatmapCell" style="visibility:hidden;"></div>';
 }
+var totalFilms=0;
 var current=new Date(startDate);
 while(current<=endDate){
 var dateStr=current.toISOString().substring(0,10);
 var count=countMap[dateStr]||0;
+if(count>0)totalFilms+=count;
 var level='';
 if(count>=4)level=' l4';
 else if(count>=3)level=' l3';
@@ -1038,6 +1030,7 @@ gridHtml+='<div class="heatmapCell'+level+'" title="'+dateStr+': '+count+'"></di
 current.setDate(current.getDate()+1);
 }
 $('heatmapGrid').innerHTML=gridHtml;
+$('heatmapTotal').innerHTML=totalFilms>0?'<strong>'+totalFilms+'</strong> films in '+selectedYear:'No films logged in '+selectedYear;
 }
 
 /* ========= EDIT MODAL ========= */
