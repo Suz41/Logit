@@ -15,7 +15,7 @@ rel="preconnect"
 href="https://fonts.googleapis.com">
 
 <link
-href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 rel="stylesheet">
 <style>
 
@@ -25,7 +25,7 @@ rel="stylesheet">
 --dim:#48484a;
 --border:rgba(255,255,255,0.06);
 --green:#30d158;
---surface:#1c1c1e;
+--surface:rgba(28,28,30,0.6);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -47,7 +47,9 @@ body::-webkit-scrollbar{display:none;}
 position:sticky;
 top:0;
 z-index:20;
-background:#000;
+background:rgba(0,0,0,0.85);
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
 border-bottom:0.5px solid var(--border);
 }
 
@@ -73,7 +75,7 @@ width:32px;
 height:32px;
 border:none;
 border-radius:50%;
-background:#111;
+background:rgba(255,255,255,0.08);
 color:#fff;
 display:flex;
 align-items:center;
@@ -84,7 +86,7 @@ cursor:pointer;
 /* ========= PROFILE CARD ========= */
 
 .profileCard{
-padding:20px 16px 16px;
+padding:24px 16px 20px;
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -92,10 +94,12 @@ text-align:center;
 }
 
 .avatar{
-width:72px;
-height:72px;
+width:76px;
+height:76px;
 border-radius:50%;
-background:#1c1c1e;
+background:var(--surface);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
 display:flex;
 align-items:center;
 justify-content:center;
@@ -117,132 +121,67 @@ object-fit:cover;
 font-size:20px;
 font-weight:700;
 color:#fff;
-margin-bottom:4px;
+margin-bottom:3px;
 }
 
 .profileBio{
-font-size:13px;
+font-size:12px;
 color:var(--muted);
-max-width:280px;
+max-width:260px;
 line-height:1.4;
-margin-bottom:12px;
+margin-bottom:14px;
 }
 
 .profileStats{
 display:flex;
-gap:20px;
-margin-bottom:16px;
+gap:0;
+margin-bottom:14px;
+background:var(--surface);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+border:0.5px solid var(--border);
+border-radius:12px;
+overflow:hidden;
 }
 
 .profileStat{
 display:flex;
 flex-direction:column;
 align-items:center;
+padding:12px 20px;
+position:relative;
+}
+
+.profileStat:not(:last-child)::after{
+content:'';
+position:absolute;
+right:0;
+top:20%;
+height:60%;
+width:0.5px;
+background:var(--border);
 }
 
 .profileStatNum{
-font-size:18px;
+font-size:17px;
 font-weight:700;
 color:#fff;
 }
 
 .profileStatLabel{
-font-size:10px;
-color:var(--muted);
+font-size:9px;
+color:var(--dim);
 text-transform:uppercase;
 letter-spacing:0.5px;
 margin-top:2px;
 }
 
 .editBtn{
-height:34px;
-padding:0 16px;
-border:0.5px solid var(--border);
-border-radius:10px;
-background:transparent;
-color:var(--text);
-font-size:12px;
-font-weight:500;
-cursor:pointer;
-font-family:'Inter',sans-serif;
-}
-
-/* ========= HEATMAP ========= */
-
-.heatmapSection{
-padding:0 12px;
-margin-bottom:20px;
-}
-
-.heatmapTitle{
-font-size:11px;
-font-weight:600;
-color:var(--muted);
-text-transform:uppercase;
-letter-spacing:0.5px;
-margin-bottom:10px;
-}
-
-.heatmapGrid{
-display:flex;
-gap:3px;
-flex-wrap:wrap;
-justify-content:flex-start;
-}
-
-.heatmapCell{
-width:14px;
-height:14px;
-border-radius:3px;
-background:#1c1c1e;
-}
-
-.heatmapCell.l1{background:#0e4429;}
-.heatmapCell.l2{background:#006d32;}
-.heatmapCell.l3{background:#26a641;}
-.heatmapCell.l4{background:#39d353;}
-
-.heatmapMonths{
-display:flex;
-justify-content:space-between;
-padding:0 2px;
-margin-bottom:6px;
-}
-
-.heatmapMonth{
-font-size:9px;
-color:var(--dim);
-}
-
-.heatmapLegend{
-display:flex;
-align-items:center;
-gap:3px;
-margin-top:8px;
-justify-content:flex-end;
-}
-
-.heatmapLegend span{
-font-size:9px;
-color:var(--dim);
-margin-right:2px;
-}
-
-/* ========= YEAR PICKER ========= */
-
-.yearPicker{
-display:flex;
-gap:6px;
-margin-bottom:12px;
-flex-wrap:wrap;
-}
-
-.yearBtn{
-height:28px;
-padding:0 12px;
+height:30px;
+padding:0 14px;
 border:0.5px solid var(--border);
 border-radius:8px;
-background:transparent;
+background:rgba(255,255,255,0.04);
 color:var(--muted);
 font-size:11px;
 font-weight:500;
@@ -250,39 +189,28 @@ cursor:pointer;
 font-family:'Inter',sans-serif;
 }
 
-.yearBtn.active{
-background:#1c1c1e;
-color:#fff;
-border-color:rgba(255,255,255,0.12);
+/* ========= CARDS ========= */
+
+.card{
+margin:0 12px 10px;
+padding:14px;
+border:0.5px solid var(--border);
+border-radius:12px;
+background:var(--surface);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
 }
 
 /* ========= STREAK ========= */
 
-.streakSection{
-padding:0 12px;
-margin-bottom:20px;
-}
-
-.streakCard{
-border:0.5px solid var(--border);
-border-radius:10px;
-padding:14px;
+.streakRow{
 display:flex;
 align-items:center;
-gap:12px;
-}
-
-.streakIcon{
-font-size:24px;
-}
-
-.streakInfo{
-display:flex;
-flex-direction:column;
+gap:10px;
 }
 
 .streakNum{
-font-size:18px;
+font-size:16px;
 font-weight:700;
 color:#fff;
 }
@@ -292,11 +220,248 @@ font-size:11px;
 color:var(--muted);
 }
 
-.streakDetail{
+/* ========= HEATMAP ========= */
+
+.heatmapMonths{
+display:flex;
+justify-content:space-between;
+padding:0 2px;
+margin-bottom:4px;
+}
+
+.heatmapMonth{
+font-size:8px;
+color:var(--dim);
+}
+
+.heatmapGrid{
+display:flex;
+gap:2px;
+flex-wrap:wrap;
+justify-content:flex-start;
+}
+
+.heatmapCell{
+width:12px;
+height:12px;
+border-radius:2px;
+background:rgba(255,255,255,0.04);
+}
+
+.heatmapCell.l1{background:#0e4429;}
+.heatmapCell.l2{background:#006d32;}
+.heatmapCell.l3{background:#26a641;}
+.heatmapCell.l4{background:#39d353;}
+
+.heatmapMeta{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:8px;
+}
+
+.heatmapTitle{
+font-size:11px;
+font-weight:600;
+color:var(--muted);
+text-transform:uppercase;
+letter-spacing:0.5px;
+}
+
+.heatmapLegend{
+display:flex;
+align-items:center;
+gap:2px;
+}
+
+.heatmapLegend span{
+font-size:8px;
+color:var(--dim);
+margin:0 2px;
+}
+
+/* ========= YEAR PICKER ========= */
+
+.yearPicker{
+display:flex;
+gap:4px;
+margin-bottom:10px;
+flex-wrap:wrap;
+}
+
+.yearBtn{
+height:24px;
+padding:0 10px;
+border:0.5px solid var(--border);
+border-radius:6px;
+background:transparent;
+color:var(--dim);
+font-size:10px;
+font-weight:500;
+cursor:pointer;
+font-family:'Inter',sans-serif;
+}
+
+.yearBtn.active{
+background:rgba(255,255,255,0.08);
+color:#fff;
+border-color:rgba(255,255,255,0.12);
+}
+
+/* ========= GENRES ========= */
+
+.genreRow{
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:6px;
+}
+
+.genreLabel{
+font-size:11px;
+color:var(--text);
+width:68px;
+flex-shrink:0;
+text-align:right;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.genreBarWrap{
+flex:1;
+height:14px;
+background:rgba(255,255,255,0.04);
+border-radius:3px;
+overflow:hidden;
+}
+
+.genreBar{
+height:100%;
+border-radius:3px;
+background:var(--green);
+min-width:2px;
+transition:width 0.6s ease;
+opacity:0.7;
+}
+
+.genreCount{
 font-size:10px;
 color:var(--dim);
-margin-top:2px;
+width:22px;
+text-align:right;
+flex-shrink:0;
 }
+
+/* ========= RATING DISTRIBUTION ========= */
+
+.ratingDist{
+display:flex;
+align-items:flex-end;
+gap:5px;
+height:50px;
+position:relative;
+}
+
+.ratingCol{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:flex-end;
+height:100%;
+}
+
+.ratingBar{
+width:100%;
+border-radius:2px 2px 0 0;
+background:var(--green);
+min-height:0;
+transition:height 0.4s ease;
+opacity:0.65;
+}
+
+.ratingLabel{
+font-size:8px;
+color:var(--dim);
+margin-top:4px;
+}
+
+/* ========= PEOPLE ========= */
+
+.sectionLabel{
+font-size:11px;
+font-weight:600;
+color:var(--muted);
+text-transform:uppercase;
+letter-spacing:0.5px;
+margin-bottom:8px;
+}
+
+.peopleGrid{
+display:flex;
+flex-wrap:wrap;
+gap:5px;
+}
+
+.personChip{
+height:26px;
+padding:0 10px;
+border-radius:7px;
+background:rgba(255,255,255,0.05);
+display:flex;
+align-items:center;
+gap:4px;
+font-size:11px;
+color:var(--text);
+border:0.5px solid var(--border);
+}
+
+.personChip .pCount{
+font-size:9px;
+color:var(--dim);
+}
+
+/* ========= BOTTOM NAV ========= */
+
+.bottomNav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:83px;
+background:rgba(0,0,0,0.88);
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
+border-top:0.5px solid rgba(255,255,255,0.06);
+display:flex;
+align-items:flex-start;
+justify-content:space-around;
+padding-top:8px;
+z-index:30;
+transition:transform 0.3s ease;
+}
+
+.bottomNav.hidden{transform:translateY(100%);}
+
+.navItem{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:2px;
+background:none;
+border:none;
+color:#636366;
+font-size:10px;
+font-weight:500;
+cursor:pointer;
+font-family:'Inter',sans-serif;
+padding:4px 12px;
+}
+
+.navItem .navIcon{width:24px;height:24px;}
+
+.navItem.on{color:#fff;}
 
 /* ========= EDIT MODAL ========= */
 
@@ -438,172 +603,7 @@ font-family:'Inter',sans-serif;
 margin-top:8px;
 }
 
-/* ========= STATS SECTIONS ========= */
-
-.statsSection{
-padding:0 12px;
-margin-bottom:20px;
-}
-
-.statsSectionTitle{
-font-size:11px;
-font-weight:600;
-color:var(--muted);
-text-transform:uppercase;
-letter-spacing:0.5px;
-margin-bottom:10px;
-}
-
-/* Genre bars */
-
-.genreRow{
-display:flex;
-align-items:center;
-gap:8px;
-margin-bottom:7px;
-}
-
-.genreLabel{
-font-size:11px;
-color:var(--text);
-width:70px;
-flex-shrink:0;
-text-align:right;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-}
-
-.genreBarWrap{
-flex:1;
-height:18px;
-background:#1c1c1e;
-border-radius:4px;
-overflow:hidden;
-}
-
-.genreBar{
-height:100%;
-border-radius:4px;
-background:var(--green);
-min-width:2px;
-transition:width 0.6s ease;
-}
-
-.genreCount{
-font-size:10px;
-color:var(--dim);
-width:24px;
-text-align:right;
-flex-shrink:0;
-}
-
-/* Rating distribution */
-
-.ratingDist{
-display:flex;
-align-items:flex-end;
-gap:6px;
-height:60px;
-padding-bottom:16px;
-position:relative;
-}
-
-.ratingCol{
-flex:1;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:flex-end;
-height:100%;
-}
-
-.ratingBar{
-width:100%;
-border-radius:3px 3px 0 0;
-background:var(--green);
-min-height:0;
-transition:height 0.4s ease;
-}
-
-.ratingLabel{
-font-size:9px;
-color:var(--dim);
-margin-top:4px;
-}
-
-/* Top directors/people */
-
-.peopleGrid{
-display:flex;
-flex-wrap:wrap;
-gap:6px;
-}
-
-.personChip{
-height:28px;
-padding:0 10px;
-border-radius:8px;
-background:#1c1c1e;
-display:flex;
-align-items:center;
-gap:5px;
-font-size:11px;
-color:var(--text);
-}
-
-.personChip .pCount{
-font-size:9px;
-color:var(--dim);
-}
-
-/* ========= BOTTOM NAV ========= */
-
-.bottomNav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:83px;
-background:rgba(28,28,30,0.85);
-backdrop-filter:blur(20px);
--webkit-backdrop-filter:blur(20px);
-border-top:0.5px solid rgba(255,255,255,0.06);
-display:flex;
-align-items:flex-start;
-justify-content:space-around;
-padding-top:8px;
-z-index:30;
-transition:transform 0.3s ease;
-}
-
-.bottomNav.hidden{transform:translateY(100%);}
-
-.navItem{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:2px;
-background:none;
-border:none;
-color:#636366;
-font-size:10px;
-font-weight:500;
-cursor:pointer;
-font-family:'Inter',sans-serif;
-padding:4px 12px;
-}
-
-.navItem .navIcon{width:24px;height:24px;}
-
-.navItem.on{color:#fff;}
-
 /* ========= MISC ========= */
-
-.sectionPad{
-padding:0 12px;
-margin-bottom:20px;
-}
 
 .bodyPad{
 padding-bottom:100px;
@@ -690,7 +690,7 @@ Days
 </div>
 
 <div class="profileStatLabel">
-Avg Rating
+Avg
 </div>
 
 </div>
@@ -707,27 +707,16 @@ Edit Profile
 
 <!-- ========= STREAK ========= -->
 
-<div class="streakSection">
+<div class="card">
 
-<div class="streakCard">
-
-<div class="streakIcon">
-</div>
-
-<div class="streakInfo">
+<div class="streakRow">
 
 <div class="streakNum" id="streakNum">
-0 months
+0
 </div>
 
-<div class="streakLabel">
-Month Streak
-</div>
-
-<div class="streakDetail" id="streakDetail">
-Longest consecutive months watched
-</div>
-
+<div class="streakLabel" id="streakLabel">
+month streak
 </div>
 
 </div>
@@ -736,19 +725,12 @@ Longest consecutive months watched
 
 <!-- ========= HEATMAP ========= -->
 
-<div class="heatmapSection">
+<div class="card">
+
+<div class="heatmapMeta">
 
 <div class="heatmapTitle">
 Activity
-</div>
-
-<div class="yearPicker" id="yearPicker">
-</div>
-
-<div class="heatmapMonths" id="heatmapMonths">
-</div>
-
-<div class="heatmapGrid" id="heatmapGrid">
 </div>
 
 <div class="heatmapLegend">
@@ -771,51 +753,23 @@ Activity
 
 </div>
 
-<!-- ========= TOP DIRECTORS ========= -->
-
-<div class="statsSection">
-
-<div class="statsSectionTitle">
-Top Directors
+<div class="yearPicker" id="yearPicker">
 </div>
 
-<div class="peopleGrid" id="topDirectors">
+<div class="heatmapMonths" id="heatmapMonths">
 </div>
 
-</div>
-
-<!-- ========= TOP ACTORS ========= -->
-
-<div class="statsSection">
-
-<div class="statsSectionTitle">
-Top Actors
-</div>
-
-<div class="peopleGrid" id="topActors">
-</div>
-
-</div>
-
-<!-- ========= GENRES ========= -->
-
-<div class="statsSection">
-
-<div class="statsSectionTitle">
-Genres
-</div>
-
-<div id="genreBars">
+<div class="heatmapGrid" id="heatmapGrid">
 </div>
 
 </div>
 
 <!-- ========= RATING DISTRIBUTION ========= -->
 
-<div class="statsSection">
+<div class="card">
 
-<div class="statsSectionTitle">
-Rating Distribution
+<div class="sectionLabel">
+Ratings
 </div>
 
 <div class="ratingDist" id="ratingDist">
@@ -979,69 +933,6 @@ var totalRating=movies.reduce(function(a,b){return a+(Number(b.r)||0);},0);
 $('statAvg').textContent=movies.length?(totalRating/movies.length).toFixed(1):'0.0';
 }
 
-/* ========= TOP DIRECTORS ========= */
-
-function renderDirectors(){
-var dirMap={};
-movies.forEach(function(m){
-if(m.dr&&Array.isArray(m.dr)){
-m.dr.forEach(function(d){
-dirMap[d]=(dirMap[d]||0)+1;
-});
-}
-});
-var sorted=Object.keys(dirMap).sort(function(a,b){return dirMap[b]-dirMap[a];}).slice(0,10);
-var html='';
-sorted.forEach(function(d){
-html+='<div class="personChip">'+d+' <span class="pCount">'+dirMap[d]+'</span></div>';
-});
-$('topDirectors').innerHTML=html||'<span style="font-size:11px;color:var(--dim)">No data yet</span>';
-}
-
-/* ========= TOP ACTORS ========= */
-
-function renderActors(){
-var actMap={};
-movies.forEach(function(m){
-if(m.c&&Array.isArray(m.c)){
-m.c.slice(0,5).forEach(function(a){
-actMap[a]=(actMap[a]||0)+1;
-});
-}
-});
-var sorted=Object.keys(actMap).sort(function(a,b){return actMap[b]-actMap[a];}).slice(0,10);
-var html='';
-sorted.forEach(function(a){
-html+='<div class="personChip">'+a+' <span class="pCount">'+actMap[a]+'</span></div>';
-});
-$('topActors').innerHTML=html||'<span style="font-size:11px;color:var(--dim)">No data yet</span>';
-}
-
-/* ========= GENRES ========= */
-
-function renderGenres(){
-var gMap={};
-movies.forEach(function(m){
-if(m.g&&Array.isArray(m.g)){
-m.g.forEach(function(g){
-gMap[g]=(gMap[g]||0)+1;
-});
-}
-});
-var sorted=Object.keys(gMap).sort(function(a,b){return gMap[b]-gMap[a];}).slice(0,8);
-if(!sorted.length){
-$('genreBars').innerHTML='<span style="font-size:11px;color:var(--dim)">No data yet</span>';
-return;
-}
-var max=gMap[sorted[0]];
-var html='';
-sorted.forEach(function(g){
-var pct=(gMap[g]/max*100).toFixed(0);
-html+='<div class="genreRow"><span class="genreLabel">'+g+'</span><div class="genreBarWrap"><div class="genreBar" style="width:'+pct+'%"></div></div><span class="genreCount">'+gMap[g]+'</span></div>';
-});
-$('genreBars').innerHTML=html;
-}
-
 /* ========= RATING DISTRIBUTION ========= */
 
 function renderRatingDist(){
@@ -1055,7 +946,7 @@ var max=0;
 for(var k in bins){if(bins[k]>max)max=bins[k];}
 var html='';
 for(var i=1;i<=10;i++){
-var h=max?Math.round(bins[i]/max*50):0;
+var h=max?Math.round(bins[i]/max*42):0;
 html+='<div class="ratingCol"><div class="ratingBar" style="height:'+h+'px"></div><div class="ratingLabel">'+i+'</div></div>';
 }
 $('ratingDist').innerHTML=html;
@@ -1078,7 +969,8 @@ var diff=(curr.getFullYear()-prev.getFullYear())*12+(curr.getMonth()-prev.getMon
 if(diff===1){streak++;if(streak>best)best=streak;}
 else{streak=1;}
 }
-$('streakNum').textContent=best+(best===1?' month':' months');
+$('streakNum').textContent=best;
+$('streakLabel').textContent=best===1?'month streak':'month streak';
 }
 
 /* ========= HEATMAP ========= */
@@ -1191,9 +1083,6 @@ $('avatarPreview').textContent=initial;
 renderProfile();
 renderStats();
 renderStreak();
-renderDirectors();
-renderActors();
-renderGenres();
 renderRatingDist();
 renderYearPicker();
 renderHeatmap();
