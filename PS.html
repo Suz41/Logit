@@ -696,11 +696,13 @@ About
 
 /* ========= MOVIES ========= */
 
-let movies = JSON.parse(localStorage.getItem("movies")) || [];
+var movies = [];
 
 function loadMovies() {
-  var cached = localStorage.getItem('movies');
-  movies = cached ? JSON.parse(cached) : [];
+  try {
+    var cached = localStorage.getItem('movies');
+    movies = cached ? JSON.parse(cached) : [];
+  } catch(e) { movies = []; }
 }
 
 function init() {
@@ -785,27 +787,7 @@ langMovies[lang].push(movie.t);
 
 /* DIRECTORS */
 
-if(movie.director?.name){
-
-const name=
-movie.director.name;
-
-if(!directorCount[name]){
-
-directorCount[name]={
-img:movie.director.img||'',
-movies:new Set()
-};
-
-}
-
-directorCount[name].movies.add(
-movie.t
-);
-
-}
-
-else if(movie.dr){
+if(movie.dr){
 
 const name=movie.dr;
 
@@ -826,33 +808,7 @@ movie.t
 
 /* ACTORS */
 
-if(movie.cast){
-
-movie.cast
-.forEach(actor=>{
-
-const name=actor.name;
-
-if(!name)return;
-
-if(!actorCount[name]){
-
-actorCount[name]={
-img:actor.img||'',
-movies:new Set()
-};
-
-}
-
-actorCount[name].movies.add(
-movie.t
-);
-
-});
-
-}
-
-else if(movie.c){
+if(movie.c){
 
 movie.c
 .split(',')
@@ -1053,7 +1009,7 @@ dList.innerHTML+=`
 <div class="personInfo">
 
 <div class="personName">
-${director}
+${esc(director)}
 </div>
 
 <div class="personCount">
@@ -1068,7 +1024,7 @@ ${data.movies.size} films
 
 ${[...data.movies]
 .map(movie=>`
-<span class="movieChip">${movie}</span>
+<span class="movieChip">${esc(movie)}</span>
 `).join('')}
 
 </div>
@@ -1101,7 +1057,7 @@ aList.innerHTML+=`
 <div class="personInfo">
 
 <div class="personName">
-${actor}
+${esc(actor)}
 </div>
 
 <div class="personCount">
@@ -1116,7 +1072,7 @@ ${data.movies.size} films
 
 ${[...data.movies]
 .map(movie=>`
-<span class="movieChip">${movie}</span>
+<span class="movieChip">${esc(movie)}</span>
 `).join('')}
 
 </div>
@@ -1167,7 +1123,7 @@ Object.entries(genreCount)
 
 genreWrap.innerHTML+=`
 <div class="metaItem">
-<span class="metaName">${genre}</span>
+<span class="metaName">${esc(genre)}</span>
 <span class="metaCount">${count}</span>
 </div>
 `;
@@ -1195,7 +1151,7 @@ var moviesHtml=(langMovies[lang]||[]).map(function(m){return '<span class="metaM
 
 langWrap.innerHTML+=`
 <div class="metaItem" onclick="this.classList.toggle('active')">
-<span class="metaName">${fullName}</span>
+<span class="metaName">${esc(fullName)}</span>
 <span class="metaCount">${count}</span>
 <div class="metaMovies">${moviesHtml}</div>
 </div>
@@ -1223,7 +1179,7 @@ var moviesHtml=(regionMovies[country]||[]).map(function(m){return '<span class="
 
 regionWrap.innerHTML+=`
 <div class="metaItem" onclick="this.classList.toggle('active')">
-<span class="metaName">${country}</span>
+<span class="metaName">${esc(country)}</span>
 <span class="metaCount">${count}</span>
 <div class="metaMovies">${moviesHtml}</div>
 </div>
@@ -1279,7 +1235,7 @@ if (decades.length === 0) {
   yearWrap.innerHTML = '<div class="empty">No year data</div>';
 } else {
   decades.forEach(function(entry) {
-    yearWrap.innerHTML += '<div class="metaItem"><span class="metaName">' + entry[0] + '</span><span class="metaCount">' + entry[1] + '</span></div>';
+    yearWrap.innerHTML += '<div class="metaItem"><span class="metaName">' + esc(entry[0]) + '</span><span class="metaCount">' + entry[1] + '</span></div>';
   });
 }
 
@@ -1460,6 +1416,7 @@ var watch=entry.w||'1st Watch';
 movies.unshift({
 id:entry.id||crypto.randomUUID(),
 tmdb_id:String(detail.id||entry.tmdb_id||''),
+imdb_id:detail.imdb_id||entry.imdb_id||'',
 t:detail.title||entry.t||'',
 yr:(detail.release_date||'').slice(0,4)||entry.yr||'',
 rt:detail.runtime||0,
@@ -1471,8 +1428,7 @@ ct:(detail.production_countries&&detail.production_countries[0]?detail.productio
 r:entry.r||3,
 w:watch,
 d:entry.d||normalizeDate(null),
-sp:detail.poster_path||entry.sp||'',
-p:(detail.images&&detail.images.posters?detail.images.posters.map(function(p){return{u:p.file_path,l:p.iso_639_1||'N/A'};}):[])
+sp:detail.poster_path||entry.sp||''
 });
 imported++;
 }catch(e){failed++;}
@@ -1568,6 +1524,7 @@ var watch=entry.rewatch?'Rewatch':watchType(detail.title||'');
 movies.unshift({
 id:crypto.randomUUID(),
 tmdb_id:String(detail.id||''),
+imdb_id:detail.imdb_id||'',
 t:detail.title||'',
 yr:(detail.release_date||'').slice(0,4),
 rt:detail.runtime||0,
@@ -1579,8 +1536,7 @@ ct:(detail.production_countries&&detail.production_countries[0]?detail.productio
 r:entry.rating||3,
 w:watch,
 d:normalizeDate(entry.date),
-sp:detail.poster_path||'',
-p:(detail.images&&detail.images.posters?detail.images.posters.map(function(p){return{u:p.file_path,l:p.iso_639_1||'N/A'};}):[])
+sp:detail.poster_path||''
 });
 
 imported++;

@@ -1108,8 +1108,10 @@ body.hide-dates .movieDate { display: none; }
   }
 
   function loadMovies() {
-    var cached = localStorage.getItem('movies');
-    state.movies = cached ? JSON.parse(cached) : [];
+    try {
+      var cached = localStorage.getItem('movies');
+      state.movies = cached ? JSON.parse(cached) : [];
+    } catch(e) { state.movies = []; return; }
     // Strip poster arrays to save storage — fetch on-demand instead
     var stripped = false;
     state.movies.forEach(function(m) { if (m.p) { delete m.p; stripped = true; } });
