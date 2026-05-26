@@ -6,6 +6,7 @@ https://suz41.github.io/Logit
 
 ## Updates
 
+- **v1.5.1** — Compact stats layout: all cards in 2-col grid, tighter spacing, smaller avatars
 - **v1.5.0** — Moved Clear All Data to About page alongside API key
 - **v1.4.9** — Most Rewatched card in stats; Release Years decade breakdown; API key moved to about page
 - **v1.4.8** — Inline search bar in settings row (filter logged movies by title); grid column size persists on load; about page theme matches main/stats
