@@ -438,6 +438,125 @@ font-family:'Inter',sans-serif;
 margin-top:8px;
 }
 
+/* ========= STATS SECTIONS ========= */
+
+.statsSection{
+padding:0 12px;
+margin-bottom:20px;
+}
+
+.statsSectionTitle{
+font-size:11px;
+font-weight:600;
+color:var(--muted);
+text-transform:uppercase;
+letter-spacing:0.5px;
+margin-bottom:10px;
+}
+
+/* Genre bars */
+
+.genreRow{
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:7px;
+}
+
+.genreLabel{
+font-size:11px;
+color:var(--text);
+width:70px;
+flex-shrink:0;
+text-align:right;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.genreBarWrap{
+flex:1;
+height:18px;
+background:#1c1c1e;
+border-radius:4px;
+overflow:hidden;
+}
+
+.genreBar{
+height:100%;
+border-radius:4px;
+background:var(--green);
+min-width:2px;
+transition:width 0.6s ease;
+}
+
+.genreCount{
+font-size:10px;
+color:var(--dim);
+width:24px;
+text-align:right;
+flex-shrink:0;
+}
+
+/* Rating distribution */
+
+.ratingDist{
+display:flex;
+align-items:flex-end;
+gap:6px;
+height:60px;
+padding-bottom:16px;
+position:relative;
+}
+
+.ratingCol{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:flex-end;
+height:100%;
+}
+
+.ratingBar{
+width:100%;
+border-radius:3px 3px 0 0;
+background:var(--green);
+min-height:0;
+transition:height 0.4s ease;
+}
+
+.ratingLabel{
+font-size:9px;
+color:var(--dim);
+margin-top:4px;
+}
+
+/* Top directors/people */
+
+.peopleGrid{
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+}
+
+.personChip{
+height:28px;
+padding:0 10px;
+border-radius:8px;
+background:#1c1c1e;
+display:flex;
+align-items:center;
+gap:5px;
+font-size:11px;
+color:var(--text);
+}
+
+.personChip .pCount{
+font-size:9px;
+color:var(--dim);
+}
+
 /* ========= BOTTOM NAV ========= */
 
 .bottomNav{
@@ -652,6 +771,58 @@ Activity
 
 </div>
 
+<!-- ========= TOP DIRECTORS ========= -->
+
+<div class="statsSection">
+
+<div class="statsSectionTitle">
+Top Directors
+</div>
+
+<div class="peopleGrid" id="topDirectors">
+</div>
+
+</div>
+
+<!-- ========= TOP ACTORS ========= -->
+
+<div class="statsSection">
+
+<div class="statsSectionTitle">
+Top Actors
+</div>
+
+<div class="peopleGrid" id="topActors">
+</div>
+
+</div>
+
+<!-- ========= GENRES ========= -->
+
+<div class="statsSection">
+
+<div class="statsSectionTitle">
+Genres
+</div>
+
+<div id="genreBars">
+</div>
+
+</div>
+
+<!-- ========= RATING DISTRIBUTION ========= -->
+
+<div class="statsSection">
+
+<div class="statsSectionTitle">
+Rating Distribution
+</div>
+
+<div class="ratingDist" id="ratingDist">
+</div>
+
+</div>
+
 </div>
 
 <!-- ========= EDIT MODAL ========= -->
@@ -808,6 +979,88 @@ var totalRating=movies.reduce(function(a,b){return a+(Number(b.r)||0);},0);
 $('statAvg').textContent=movies.length?(totalRating/movies.length).toFixed(1):'0.0';
 }
 
+/* ========= TOP DIRECTORS ========= */
+
+function renderDirectors(){
+var dirMap={};
+movies.forEach(function(m){
+if(m.dr&&Array.isArray(m.dr)){
+m.dr.forEach(function(d){
+dirMap[d]=(dirMap[d]||0)+1;
+});
+}
+});
+var sorted=Object.keys(dirMap).sort(function(a,b){return dirMap[b]-dirMap[a];}).slice(0,10);
+var html='';
+sorted.forEach(function(d){
+html+='<div class="personChip">'+d+' <span class="pCount">'+dirMap[d]+'</span></div>';
+});
+$('topDirectors').innerHTML=html||'<span style="font-size:11px;color:var(--dim)">No data yet</span>';
+}
+
+/* ========= TOP ACTORS ========= */
+
+function renderActors(){
+var actMap={};
+movies.forEach(function(m){
+if(m.c&&Array.isArray(m.c)){
+m.c.slice(0,5).forEach(function(a){
+actMap[a]=(actMap[a]||0)+1;
+});
+}
+});
+var sorted=Object.keys(actMap).sort(function(a,b){return actMap[b]-actMap[a];}).slice(0,10);
+var html='';
+sorted.forEach(function(a){
+html+='<div class="personChip">'+a+' <span class="pCount">'+actMap[a]+'</span></div>';
+});
+$('topActors').innerHTML=html||'<span style="font-size:11px;color:var(--dim)">No data yet</span>';
+}
+
+/* ========= GENRES ========= */
+
+function renderGenres(){
+var gMap={};
+movies.forEach(function(m){
+if(m.g&&Array.isArray(m.g)){
+m.g.forEach(function(g){
+gMap[g]=(gMap[g]||0)+1;
+});
+}
+});
+var sorted=Object.keys(gMap).sort(function(a,b){return gMap[b]-gMap[a];}).slice(0,8);
+if(!sorted.length){
+$('genreBars').innerHTML='<span style="font-size:11px;color:var(--dim)">No data yet</span>';
+return;
+}
+var max=gMap[sorted[0]];
+var html='';
+sorted.forEach(function(g){
+var pct=(gMap[g]/max*100).toFixed(0);
+html+='<div class="genreRow"><span class="genreLabel">'+g+'</span><div class="genreBarWrap"><div class="genreBar" style="width:'+pct+'%"></div></div><span class="genreCount">'+gMap[g]+'</span></div>';
+});
+$('genreBars').innerHTML=html;
+}
+
+/* ========= RATING DISTRIBUTION ========= */
+
+function renderRatingDist(){
+var bins={};
+for(var i=1;i<=10;i++)bins[i]=0;
+movies.forEach(function(m){
+var r=Math.round(Number(m.r));
+if(r>=1&&r<=10)bins[r]++;
+});
+var max=0;
+for(var k in bins){if(bins[k]>max)max=bins[k];}
+var html='';
+for(var i=1;i<=10;i++){
+var h=max?Math.round(bins[i]/max*50):0;
+html+='<div class="ratingCol"><div class="ratingBar" style="height:'+h+'px"></div><div class="ratingLabel">'+i+'</div></div>';
+}
+$('ratingDist').innerHTML=html;
+}
+
 /* ========= STREAK ========= */
 
 function renderStreak(){
@@ -938,6 +1191,10 @@ $('avatarPreview').textContent=initial;
 renderProfile();
 renderStats();
 renderStreak();
+renderDirectors();
+renderActors();
+renderGenres();
+renderRatingDist();
 renderYearPicker();
 renderHeatmap();
 
