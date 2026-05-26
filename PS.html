@@ -92,7 +92,7 @@ gap:6px;
 
 .hero{
 display:grid;
-grid-template-columns:repeat(2,1fr);
+grid-template-columns:repeat(3,1fr);
 gap:6px;
 }
 
@@ -514,17 +514,6 @@ Average
 
 </div>
 
-<div class="statBox">
-
-<h2 id="monthStreak">
-0
-</h2>
-
-<p>
-Month Streak
-</p>
-
-</div>
 
 </div>
 
@@ -976,28 +965,6 @@ document.getElementById(
 "ratingAvg"
 ).innerText=
 avgRating;
-
-/* ========= MONTH STREAK ========= */
-
-var monthSet=new Set();
-movies.forEach(function(m){
-if(m.d){
-var ym=m.d.substring(0,7);
-monthSet.add(ym);
-}
-});
-var sortedMonths=Array.from(monthSet).sort();
-var streak=0;
-var best=0;
-for(var i=0;i<sortedMonths.length;i++){
-if(i===0){streak=1;best=1;continue;}
-var prev=new Date(sortedMonths[i-1]+'-01');
-var curr=new Date(sortedMonths[i]+'-01');
-var diff=(curr.getFullYear()-prev.getFullYear())*12+(curr.getMonth()-prev.getMonth());
-if(diff===1){streak++;if(streak>best)best=streak;}
-else{streak=1;}
-}
-document.getElementById("monthStreak").innerText=best;
 
 /* ========= TOP PEOPLE ========= */
 
